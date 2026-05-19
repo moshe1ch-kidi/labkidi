@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Fredoka:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", "Fredoka", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-[#f3f7ff] text-slate-800 font-sans antialiased overflow-hidden;
+  }
+}
+
+/* Custom Range Slider Styles for Hardware look */
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin-top: -6px; /* Centers thumb on track */
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  border-radius: 3px;
+}
+
+input[type='range']::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  border-radius: 3px;
+}
+
+/* Blockly Toolbox Centering - aggressive */
+.blocklyTreeRow {
+  height: 100px !important;
+  width: 100px !important;
+  margin: 10px auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  border: 4px solid transparent !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.blocklyTreeRowContent {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+  text-align: center !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+}
+
+.blocklyTreeLabel {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  font-size: 11px !important;
+  text-align: center !important;
+  margin-top: 6px !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-indent: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+
+.blocklyTreeRow:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.blocklyTreeSelected {
+  @apply !shadow-lg;
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.blocklyTreeSelected .blocklyTreeLabel {
+  /* removed to let emoji colors stay */
+}
+
+.blocklyFlyoutBackground {
+  @apply fill-[#F8FAFC] opacity-100;
+}
+
+.blocklyMainBackground {
+  @apply fill-[#F0F4F8] opacity-100;
+}
+
+/* ZOLO Style Blocks - Soft rounded feel */
+.blocklyPath {
+  stroke-width: 1.5px;
+  stroke: rgba(0,0,0,0.15);
+}
+
+.blocklySelected > .blocklyPath {
+  stroke: #4F46E5 !important;
+  stroke-width: 3px !important;
+}
+
+/* Custom Scrollbars */
+.blocklyScrollbarHandle {
+  opacity: 0 !important;
+}
+
+/* Toolbox Styling */
+.blocklyToolboxDiv {
+  @apply bg-white border-r border-slate-200 p-2;
+}
+
+.cat-bg-control { @apply !bg-[#FFAB19]; }
+.cat-bg-sensor { @apply !bg-[#5CB1D6]; }
+.cat-bg-output { @apply !bg-[#9966FF]; }
+.cat-bg-math    { @apply !bg-[#59C059]; }
+.cat-bg-logic   { @apply !bg-[#FFAB19]; }
+
+.blocklyTreeRow .blocklyTreeLabel {
+  /* Inherits global blocklyTreeLabel styles */
+}
+
+.cat-control .blocklyTreeLabel { color: #996000 !important; }
+.cat-sensor  .blocklyTreeLabel { color: #1E6D8A !important; }
+.cat-output  .blocklyTreeLabel { color: #5533AA !important; }
+.cat-math    .blocklyTreeLabel { color: #226622 !important; }
+.cat-logic   .blocklyTreeLabel { color: #996000 !important; }
+
+/* Corner radius for flyout */
+.blocklyFlyout {
+  @apply rounded-r-3xl overflow-hidden;
+}
