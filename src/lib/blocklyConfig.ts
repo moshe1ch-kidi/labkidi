@@ -294,7 +294,7 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     }
   };
   javascriptGenerator.forBlock['microbit_potentiometer'] = function() {
-    return [`microbit.analogRead('P0')`, Order.FUNCTION_CALL];
+    return [`microbit.analogRead('P3')`, Order.FUNCTION_CALL];
   };
 
   // Light Sensor (External)
@@ -308,7 +308,7 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     }
   };
   javascriptGenerator.forBlock['microbit_light_sensor'] = function() {
-    return [`microbit.analogRead('P0')`, Order.FUNCTION_CALL];
+    return [`microbit.analogRead('P1')`, Order.FUNCTION_CALL];
   };
 
   // Push Button
@@ -323,7 +323,7 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   };
 
   javascriptGenerator.forBlock['microbit_push_button'] = function() {
-    return [`(microbit.digitalRead('P0') === 1 ? 1 : 0)`, Order.FUNCTION_CALL];
+    return [`(microbit.digitalRead('P8') === 1 ? 1 : 0)`, Order.FUNCTION_CALL];
   };
 
   // On Button Pressed
