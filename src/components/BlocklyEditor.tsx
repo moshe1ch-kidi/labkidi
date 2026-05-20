@@ -19,7 +19,7 @@ import MotorIcon from '@icons/motor.png';
 import ServoIcon from '@icons/servo.png';
 import LedIcon from '@icons/led.png';
 import BuzzerIcon from '@icons/buzzer.png';
-import ForeverIcon from '@icons/forever-1.png';
+import ForeverIcon from '@icons/forever.png';
 import WaitIcon from '@icons/wait.png';
 import RepeatIcon from '@icons/repeat.png';
 
