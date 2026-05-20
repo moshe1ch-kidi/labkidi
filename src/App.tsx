@@ -1,8 +1,8 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+ import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2 } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
-import { ComponentInstance } from './types';
+import { ComponentInstance, ComponentType } from './types';
 import Board from './components/Board';
 import BlocklyEditor, { BlocklyEditorRef } from './components/BlocklyEditor';
 
@@ -29,6 +29,76 @@ export default function App() {
 
   const handleSensorHover = (instance: ComponentInstance | null) => {
     setHoveredSensorId(instance ? instance.id : null);
+  };
+
+  const handleSwapComponent = (id: string, newType: ComponentType) => {
+    // Determine the name and default starting/range values for the swapped type
+    let name = '';
+    let value = 0;
+    
+    switch (newType) {
+      case 'humidity_sensor':
+        name = 'Humidity Sensor';
+        value = 45;
+        break;
+      case 'light_sensor':
+        name = 'Light Sensor';
+        value = 250;
+        break;
+      case 'temp_sensor':
+        name = 'Temperature Sensor';
+        value = 25;
+        break;
+      case 'potentiometer':
+        name = 'Rotary Dial';
+        value = 512;
+        break;
+      case 'button':
+        name = 'Push Button';
+        value = 0;
+        break;
+      case 'switch':
+        name = 'Switch Toggle';
+        value = 0;
+        break;
+      case 'ultrasonic_sensor':
+        name = 'Distance Sensor';
+        value = 120;
+        break;
+      case 'pir_sensor':
+        name = 'PIR Motion Sensor';
+        value = 0;
+        break;
+      case 'red_led':
+        name = 'Alert LED';
+        value = 0;
+        break;
+      case 'yellow_led':
+        name = 'Status LED';
+        value = 0;
+        break;
+      case 'motor':
+        name = 'DC Motor Fan';
+        value = 0;
+        break;
+      case 'servo':
+        name = 'Micro Servo';
+        value = 90;
+        break;
+      case 'stepper_motor':
+        name = 'Stepper Motor';
+        value = 0;
+        break;
+      case 'buzzer':
+        name = 'Main Buzzer';
+        value = 0;
+        break;
+      default:
+        name = 'Component';
+        value = 0;
+    }
+
+    setComponents(prev => prev.map(c => c.id === id ? { ...c, type: newType, name, value } : c));
   };
 
   const stopSimulation = useCallback(() => {
@@ -260,6 +330,7 @@ export default function App() {
                    onValueChange={handleValueChange} 
                    onButtonPress={handleButtonPress}
                    onSensorHover={handleSensorHover}
+                   onSwapComponent={handleSwapComponent}
                 />
              </div>
           </div>
