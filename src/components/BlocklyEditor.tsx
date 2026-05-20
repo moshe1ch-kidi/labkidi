@@ -3,6 +3,7 @@ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { defineBlocks, toolbox, COLORS } from '../lib/blocklyConfig';
 import { javascriptGenerator } from 'blockly/javascript';
+import { pythonGenerator } from 'blockly/python';
 import NumericKeypad from './NumericKeypad';
 import { NumericField } from '../lib/NumericField';
 
@@ -31,6 +32,9 @@ interface BlocklyEditorProps {
 export interface BlocklyEditorRef {
   highlightBlock: (id: string | null) => void;
   getCodeForSimulation: () => string;
+  getPythonCode: () => string;
+  getWorkspaceState: () => any;
+  setWorkspaceState: (state: any) => void;
 }
 
 // Register the custom field class
@@ -119,6 +123,23 @@ export default forwardRef<BlocklyEditorRef, BlocklyEditorProps>(({ onCodeChange,
       const code = javascriptGenerator.workspaceToCode(workspaceRef.current!);
       javascriptGenerator.STATEMENT_PREFIX = oldPrefix;
       return code;
+    },
+    getPythonCode: () => {
+      if (!workspaceRef.current) return '';
+      return pythonGenerator.workspaceToCode(workspaceRef.current);
+    },
+    getWorkspaceState: () => {
+      if (!workspaceRef.current) return null;
+      return Blockly.serialization.workspaces.save(workspaceRef.current);
+    },
+    setWorkspaceState: (state: any) => {
+      if (!workspaceRef.current || !state) return;
+      try {
+        workspaceRef.current.clear();
+        Blockly.serialization.workspaces.load(state, workspaceRef.current);
+      } catch (err) {
+        console.error('Error loading workspace state:', err);
+      }
     }
   }));
 
