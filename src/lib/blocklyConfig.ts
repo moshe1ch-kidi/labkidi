@@ -1,4 +1,4 @@
-import * as Blockly from 'blockly';
+ import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import { pythonGenerator, Order as PythonOrder } from 'blockly/python';
 import { NumericField } from './NumericField';
@@ -483,7 +483,20 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   javascriptGenerator.forBlock['custom_repeat'] = function(block, generator) {
     const times = block.getFieldValue('TIMES') || '10';
     const statements = generator.statementToCode(block, 'DO');
-    return `for (let i = 0; i < ${times}; i++) {\n${statements}}\n`;
+    return `for (let i = 0; i < ${times}; i++) {\n  await new Promise(r => setTimeout(r, 10));\n${statements}}\n`;
+  };
+
+  javascriptGenerator.forBlock['controls_whileUntil'] = function(block, generator) {
+    const mode = block.getFieldValue('MODE');
+    const order = mode === 'UNTIL' ? Order.LOGICAL_NOT : Order.NONE;
+    let argument0 = generator.valueToCode(block, 'BOOL', order) || 'false';
+    const statements = generator.statementToCode(block, 'DO');
+    
+    if (mode === 'UNTIL') {
+      argument0 = '!' + argument0;
+    }
+    
+    return `while (${argument0}) {\n  await new Promise(r => setTimeout(r, 10));\n${statements}}\n`;
   };
 
   pythonGenerator.forBlock['custom_repeat'] = function(block, generator) {
