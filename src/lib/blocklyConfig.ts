@@ -1,5 +1,6 @@
 import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
+import { pythonGenerator, Order as PythonOrder } from 'blockly/python';
 import { NumericField } from './NumericField';
 
 export const COLORS = {
@@ -45,6 +46,13 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return `await microbit.playTone(${frequency}, ${ms});\n`;
   };
 
+  pythonGenerator.forBlock['microbit_buzzer'] = function(block) {
+    const frequency = block.getFieldValue('NOTE');
+    const sec = block.getFieldValue('DURATION') || '1';
+    const ms = Math.round(Number(sec) * 1000);
+    return `microbit.play_tone(${frequency}, ${ms})\n`;
+  };
+
   // Motor
   Blockly.Blocks['microbit_motor'] = {
     init: function() {
@@ -64,6 +72,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return `await microbit.setMotorSpeed(${speed});\n`;
   };
 
+  pythonGenerator.forBlock['microbit_motor'] = function(block) {
+    const speed = block.getFieldValue('SPEED') || '0';
+    return `microbit.set_motor_speed(${speed})\n`;
+  };
+
   // Stop Motor
   Blockly.Blocks['microbit_stop_motor'] = {
     init: function() {
@@ -79,6 +92,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
 
   javascriptGenerator.forBlock['microbit_stop_motor'] = function(block) {
     return `await microbit.setMotorSpeed(0);\n`;
+  };
+
+  pythonGenerator.forBlock['microbit_stop_motor'] = function(block) {
+    return `microbit.set_motor_speed(0)\n`;
   };
   
   // Servo
@@ -100,6 +117,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return `await microbit.setServoAngle(${angle});\n`;
   };
 
+  pythonGenerator.forBlock['microbit_servo'] = function(block) {
+    const angle = block.getFieldValue('ANGLE') || '90';
+    return `microbit.set_servo_angle(${angle})\n`;
+  };
+
   // Red LED
   Blockly.Blocks['microbit_red_led'] = {
     init: function() {
@@ -117,6 +139,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   javascriptGenerator.forBlock['microbit_red_led'] = function(block) {
     const state = block.getFieldValue('STATE');
     return `await microbit.setLedState('red', ${state});\n`;
+  };
+
+  pythonGenerator.forBlock['microbit_red_led'] = function(block) {
+    const state = block.getFieldValue('STATE');
+    return `microbit.set_led_state('red', ${state})\n`;
   };
 
   // Yellow LED
@@ -138,6 +165,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return `await microbit.setLedState('yellow', ${state});\n`;
   };
 
+  pythonGenerator.forBlock['microbit_yellow_led'] = function(block) {
+    const state = block.getFieldValue('STATE');
+    return `microbit.set_led_state('yellow', ${state})\n`;
+  };
+
   // Show String
   Blockly.Blocks['microbit_show_string'] = {
     init: function() {
@@ -154,6 +186,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   javascriptGenerator.forBlock['microbit_show_string'] = function(block, generator) {
     const text = generator.valueToCode(block, 'TEXT', Order.ATOMIC) || "''";
     return `await microbit.showString(${text});\n`;
+  };
+
+  pythonGenerator.forBlock['microbit_show_string'] = function(block, generator) {
+    const text = generator.valueToCode(block, 'TEXT', PythonOrder.ATOMIC) || "''";
+    return `microbit.show_string(${text})\n`;
   };
 
   // Forever Loop
@@ -173,6 +210,12 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     const statements = generator.statementToCode(block, 'DO');
     // We wrap it in an async IIFE that loops
     return `(async () => { while(true) { ${statements} await new Promise(r => setTimeout(r, 50)); } })();\n`;
+  };
+
+  pythonGenerator.forBlock['microbit_forever'] = function(block, generator) {
+    const statements = generator.statementToCode(block, 'DO');
+    const code = statements || '    pass\n';
+    return `while True:\n${code}`;
   };
 
   // Digital Output (Write)
@@ -197,6 +240,12 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return `microbit.digitalWrite('${pin}', ${value});\n`;
   };
 
+  pythonGenerator.forBlock['microbit_digital_write'] = function(block) {
+    const pin = block.getFieldValue('PIN');
+    const value = block.getFieldValue('VALUE');
+    return `microbit.digital_write('${pin}', ${value})\n`;
+  };
+
   // Analog Read
   Blockly.Blocks['microbit_analog_read'] = {
     init: function() {
@@ -215,6 +264,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return [`microbit.analogRead('${pin}')`, Order.FUNCTION_CALL];
   };
 
+  pythonGenerator.forBlock['microbit_analog_read'] = function(block, generator) {
+    const pin = block.getFieldValue('PIN');
+    return [`microbit.analog_read('${pin}')`, PythonOrder.FUNCTION_CALL];
+  };
+
   // Temperature
   Blockly.Blocks['microbit_temperature'] = {
     init: function() {
@@ -228,6 +282,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return [`microbit.temperature()`, Order.FUNCTION_CALL];
   };
 
+  pythonGenerator.forBlock['microbit_temperature'] = function() {
+    return [`microbit.temperature()`, PythonOrder.FUNCTION_CALL];
+  };
+
   // Light Level
   Blockly.Blocks['microbit_light_level'] = {
     init: function() {
@@ -239,6 +297,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   };
   javascriptGenerator.forBlock['microbit_light_level'] = function() {
     return [`microbit.lightLevel()`, Order.FUNCTION_CALL];
+  };
+
+  pythonGenerator.forBlock['microbit_light_level'] = function() {
+    return [`microbit.light_level()`, PythonOrder.FUNCTION_CALL];
   };
 
   // Acceleration
@@ -256,6 +318,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return [`microbit.acceleration('${dim}')`, Order.FUNCTION_CALL];
   };
 
+  pythonGenerator.forBlock['microbit_acceleration'] = function(block) {
+    const dim = block.getFieldValue('DIMENSION');
+    return [`microbit.acceleration('${dim}')`, PythonOrder.FUNCTION_CALL];
+  };
+
   // Moisture Sensor
   Blockly.Blocks['microbit_moisture_sensor'] = {
     init: function() {
@@ -268,6 +335,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   };
   javascriptGenerator.forBlock['microbit_moisture_sensor'] = function() {
     return [`microbit.analogRead('P0')`, Order.FUNCTION_CALL];
+  };
+
+  pythonGenerator.forBlock['microbit_moisture_sensor'] = function() {
+    return [`microbit.analog_read('P0')`, PythonOrder.FUNCTION_CALL];
   };
 
   // Ultrasonic Sensor
@@ -284,6 +355,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return [`microbit.ultrasonicRead('P0', 'P8')`, Order.FUNCTION_CALL];
   };
 
+  pythonGenerator.forBlock['microbit_ultrasonic_sensor'] = function() {
+    return [`microbit.ultrasonic_read('P0', 'P8')`, PythonOrder.FUNCTION_CALL];
+  };
+
   // Potentiometer
   Blockly.Blocks['microbit_potentiometer'] = {
     init: function() {
@@ -296,6 +371,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   };
   javascriptGenerator.forBlock['microbit_potentiometer'] = function() {
     return [`microbit.analogRead('P3')`, Order.FUNCTION_CALL];
+  };
+
+  pythonGenerator.forBlock['microbit_potentiometer'] = function() {
+    return [`microbit.analog_read('P3')`, PythonOrder.FUNCTION_CALL];
   };
 
   // Light Sensor (External)
@@ -312,6 +391,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return [`microbit.analogRead('P1')`, Order.FUNCTION_CALL];
   };
 
+  pythonGenerator.forBlock['microbit_light_sensor'] = function() {
+    return [`microbit.analog_read('P1')`, PythonOrder.FUNCTION_CALL];
+  };
+
   // Push Button
   Blockly.Blocks['microbit_push_button'] = {
     init: function() {
@@ -325,6 +408,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
 
   javascriptGenerator.forBlock['microbit_push_button'] = function() {
     return [`(microbit.digitalRead('P8') === 1 ? 1 : 0)`, Order.FUNCTION_CALL];
+  };
+
+  pythonGenerator.forBlock['microbit_push_button'] = function() {
+    return [`(1 if microbit.digital_read('P8') == 1 else 0)`, PythonOrder.FUNCTION_CALL];
   };
 
   // On Button Pressed
@@ -346,6 +433,13 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return `microbit.onButtonPressed('${button}', async () => {\n${statements}});\n`;
   };
 
+  pythonGenerator.forBlock['microbit_on_button'] = function(block, generator) {
+    const button = block.getFieldValue('BUTTON');
+    const statements = generator.statementToCode(block, 'DO');
+    const code = statements || '    pass\n';
+    return `def on_button_${button.toLowerCase()}_pressed():\n${code}`;
+  };
+
   // Wait
   Blockly.Blocks['microbit_wait'] = {
     init: function() {
@@ -364,6 +458,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     const sec = block.getFieldValue('SEC') || '1';
     const ms = Number(sec) * 1000;
     return `await new Promise(r => setTimeout(r, ${ms}));\n`;
+  };
+
+  pythonGenerator.forBlock['microbit_wait'] = function(block) {
+    const sec = block.getFieldValue('SEC') || '1';
+    return `time.sleep(${sec})\n`;
   };
 
   // Repeat (Customized)
@@ -387,6 +486,13 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return `for (let i = 0; i < ${times}; i++) {\n${statements}}\n`;
   };
 
+  pythonGenerator.forBlock['custom_repeat'] = function(block, generator) {
+    const times = block.getFieldValue('TIMES') || '10';
+    const statements = generator.statementToCode(block, 'DO');
+    const code = statements || '    pass\n';
+    return `for i in range(${times}):\n${code}`;
+  };
+
   // Math Number (Customized)
   Blockly.Blocks['custom_math_number'] = {
     init: function() {
@@ -398,6 +504,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   };
   javascriptGenerator.forBlock['custom_math_number'] = function(block) {
     return [block.getFieldValue('NUM'), Order.ATOMIC];
+  };
+
+  pythonGenerator.forBlock['custom_math_number'] = function(block) {
+    return [block.getFieldValue('NUM'), PythonOrder.ATOMIC];
   };
 
   // Math Round (Customized)
@@ -415,6 +525,11 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return [`Math.round(${num})`, Order.FUNCTION_CALL];
   };
 
+  pythonGenerator.forBlock['custom_math_round'] = function(block) {
+    const num = block.getFieldValue('NUM') || '0';
+    return [`round(${num})`, PythonOrder.FUNCTION_CALL];
+  };
+
   // Green Flag
   Blockly.Blocks['microbit_green_flag'] = {
     init: function() {
@@ -425,6 +540,10 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     }
   };
   javascriptGenerator.forBlock['microbit_green_flag'] = function() {
+    return '';
+  };
+
+  pythonGenerator.forBlock['microbit_green_flag'] = function() {
     return '';
   };
 
@@ -456,6 +575,12 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     const frequency = block.getFieldValue('NOTE');
     const duration = block.getFieldValue('DURATION');
     return `await microbit.playTone(${frequency}, ${duration});\n`;
+  };
+
+  pythonGenerator.forBlock['microbit_play_tone'] = function(block) {
+    const frequency = block.getFieldValue('NOTE');
+    const duration = block.getFieldValue('DURATION');
+    return `microbit.play_tone(${frequency}, ${duration})\n`;
   };
 };
 
