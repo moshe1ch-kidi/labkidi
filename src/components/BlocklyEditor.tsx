@@ -19,6 +19,9 @@ import MotorIcon from '@icons/motor.png';
 import ServoIcon from '@icons/servo.png';
 import LedIcon from '@icons/led.png';
 import BuzzerIcon from '@icons/buzzer.png';
+import ForeverIcon from '@icons/forever-1.png';
+import WaitIcon from '@icons/wait.png';
+import RepeatIcon from '@icons/repeat.png';
 
 interface BlocklyEditorProps {
   onCodeChange?: (code: string) => void;
@@ -132,7 +135,10 @@ export default forwardRef<BlocklyEditorRef, BlocklyEditorProps>(({ onCodeChange,
         motor: MotorIcon,
         servo: ServoIcon,
         led: LedIcon,
-        buzzer: BuzzerIcon
+        buzzer: BuzzerIcon,
+        forever: ForeverIcon,
+        wait: WaitIcon,
+        repeat: RepeatIcon
       });
       workspaceRef.current = Blockly.inject(blocklyDiv.current, {
         toolbox: toolbox,
