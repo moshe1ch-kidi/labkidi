@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X } from 'lucide-react';
+import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
 import { ComponentInstance, ComponentType } from './types';
 import Board from './components/Board';
@@ -16,6 +16,21 @@ export default function App() {
   const [isEditorExpanded, setIsEditorExpanded] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pythonCode, setPythonCode] = useState('');
+  const [isPythonModalOpen, setIsPythonModalOpen] = useState(false);
+
+  const handleShowPythonCode = () => {
+    if (editorRef.current) {
+      const code = editorRef.current.getPythonCode();
+      setPythonCode(code || '# אין לבנים בסביבת העבודה.\n# גרור לבנים כדי ליצור קוד!');
+      setIsPythonModalOpen(true);
+    }
+  };
+
+  const handleCopyPythonCode = () => {
+    navigator.clipboard.writeText(pythonCode);
+    showToast('הקוד הועתק ללוח הגזירים בהצלחה!', 'success');
+  };
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -412,6 +427,30 @@ export default function App() {
                    </div>
                 </div>
 
+                {/* Python Code viewer container with speech bubble */}
+                <div className="relative flex flex-col items-center mr-1">
+                   {/* Speech bubble */}
+                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
+                     <div className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(139,92,246,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
+                       <span>קוד פייתון</span>
+                       <span className="text-sm">🐍</span>
+                     </div>
+                     <div className="w-3 h-3 bg-fuchsia-600 rotate-45 -mt-1.5 border-r-2 border-b-2 border-white" />
+                   </div>
+
+                   <div className="flex gap-2">
+                     <motion.button
+                       whileHover={{ scale: 1.1, translateY: -2 }}
+                       whileTap={{ scale: 0.9 }}
+                       onClick={handleShowPythonCode}
+                       className="w-11 h-11 bg-violet-600 hover:bg-violet-700 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#5b21b6] transition-all cursor-pointer"
+                       title="הצג קוד פייתון"
+                     >
+                       <Code className="w-5 h-5 stroke-[2.5]" />
+                     </motion.button>
+                   </div>
+                </div>
+
                 <input 
                   type="file" 
                   ref={fileInputRef} 
@@ -519,6 +558,96 @@ export default function App() {
               <X className="w-4 h-4" />
             </button>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Python Code Viewer Modal */}
+      <AnimatePresence>
+        {isPythonModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsPythonModalOpen(false)}
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+            />
+
+            {/* Modal Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="bg-white rounded-[2rem] border-4 border-violet-500 shadow-2xl relative w-full max-w-2xl overflow-hidden flex flex-col z-10 max-h-[90vh]"
+              style={{ direction: 'rtl' }}
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-6 py-4 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center">
+                    <Code className="w-6 h-6 stroke-[2.5]" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-lg tracking-tight">קוד Python של הלבנים 🐍</h3>
+                    <p className="text-white/80 text-xs font-bold">צפייה ובדיקת קוד המיקרוביט שלך</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsPythonModalOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-xl transition-all cursor-pointer text-white/80 hover:text-white"
+                >
+                  <X className="w-6 h-6 stroke-[2.5]" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 overflow-y-auto flex-1 flex flex-col gap-4">
+                <p className="text-sm font-bold text-slate-600 leading-relaxed">
+                  קוד ה-Python נוצר אוטומטית מסביבת העבודה שלך. תוכל להעתיק ולבדוק אותו, או להשתמש בו במיקרוביט אמיתי!
+                </p>
+
+                {/* Code Window Container */}
+                <div className="relative group flex-1 min-h-[250px] flex flex-col">
+                  {/* Window Bar */}
+                  <div className="bg-slate-900 px-4 py-2 rounded-t-2xl flex items-center justify-between border-b border-slate-800 shrink-0">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-rose-500" />
+                      <div className="w-3 h-3 rounded-full bg-amber-500" />
+                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                    </div>
+                    <span className="text-[10px] font-black text-slate-400 font-mono uppercase tracking-widest leading-none">main.py</span>
+                    <span className="text-[10px] font-bold text-[#a78bfa] font-mono select-none">Python 3</span>
+                  </div>
+
+                  {/* Code Editor Screen */}
+                  <div className="flex-1 bg-slate-950 p-4 rounded-b-2xl overflow-auto max-h-[45vh] border border-slate-900 flex">
+                    <pre className="w-full text-left font-mono text-xs md:text-sm text-emerald-400 select-text outline-none whitespace-pre-wrap leading-relaxed overflow-x-auto" style={{ direction: 'ltr' }}>
+                      <code>{pythonCode}</code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="border-t-2 border-slate-100 bg-slate-50 px-6 py-4 flex items-center justify-between shrink-0">
+                <button
+                  onClick={() => setIsPythonModalOpen(false)}
+                  className="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-full transition-all cursor-pointer text-sm"
+                >
+                  סגור
+                </button>
+                <button
+                  onClick={handleCopyPythonCode}
+                  className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-black rounded-full border-2 border-white shadow-[0_3px_0_#5b21b6] hover:shadow-[0_1px_0_#5b21b6] active:translate-y-[2px] transition-all cursor-pointer flex items-center gap-2 text-sm"
+                >
+                  <Save className="w-4 h-4" />
+                  העתק קוד
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
