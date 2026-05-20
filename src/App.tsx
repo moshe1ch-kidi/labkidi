@@ -1,6 +1,6 @@
- import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2 } from 'lucide-react';
+import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
 import { ComponentInstance, ComponentType } from './types';
 import Board from './components/Board';
@@ -14,6 +14,71 @@ export default function App() {
   const [isRunning, setIsRunning] = useState(false);
   const [currentCode, setCurrentCode] = useState('');
   const [isEditorExpanded, setIsEditorExpanded] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 4000);
+  };
+
+  const handleSaveProject = () => {
+    if (!editorRef.current) return;
+    try {
+      const blocklyState = editorRef.current.getWorkspaceState();
+      const projectData = {
+        version: 1,
+        components: components,
+        blockly: blocklyState,
+      };
+      
+      const jsonStr = JSON.stringify(projectData, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `project-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      showToast('הפרויקט נשמר למחשב בהצלחה!', 'success');
+    } catch (err) {
+      console.error('Error saving project:', err);
+      showToast('שגיאה בשמירת הפרויקט', 'error');
+    }
+  };
+
+  const handleLoadProjectClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const jsonStr = event.target?.result as string;
+        const projectData = JSON.parse(jsonStr);
+
+        if (projectData.components && Array.isArray(projectData.components)) {
+          setComponents(projectData.components);
+        }
+        if (projectData.blockly && editorRef.current) {
+          editorRef.current.setWorkspaceState(projectData.blockly);
+        }
+        showToast('הפרויקט נטען בהצלחה!', 'success');
+      } catch (err) {
+        console.error('Error loading project file:', err);
+        showToast('שגיאה בטעינת הקובץ. ודא שהקובץ תקין.', 'error');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
   
   const componentsRef = useRef<ComponentInstance[]>(components);
   useEffect(() => {
@@ -260,33 +325,6 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="flex gap-3">
-            {isRunning ? (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={stopSimulation}
-                className="flex items-center gap-3 px-8 py-3 bg-[#f87171] text-white rounded-[1.25rem] text-sm font-black shadow-[0_6px_0_#dc2626] border-2 border-white transition-all"
-              >
-                <Square className="w-4 h-4 fill-current" /> STOP
-              </motion.button>
-            ) : (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={runSimulation}
-                className="flex items-center gap-3 px-6 py-3 bg-[#4ade80] text-white rounded-[1.25rem] text-sm font-black shadow-[0_6px_0_#16a34a] border-2 border-white transition-all"
-              >
-                <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#4ade80" className="w-4 h-4">
-                    <path d="M6 3v18h2v-7h10l-2-5 2-5H6z"/>
-                  </svg>
-                </div>
-                RUN
-              </motion.button>
-            )}
-          </div>
-          
           <div className="w-12 h-12 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center text-blue-500 hover:bg-blue-100 cursor-pointer shadow-sm transition-all">
             <Info className="w-6 h-6" />
           </div>
@@ -300,17 +338,97 @@ export default function App() {
                 <div className="w-4 h-4 rounded-full bg-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
                 <span className="text-sm font-black text-[#1e293b] uppercase tracking-wider">Workspace</span>
              </div>
-             <div className="flex gap-2">
+             <div className="flex gap-2.5 items-center">
+                {/* RUN / STOP Button container with a unique animated speech bubble */}
+                <div className="relative flex flex-col items-center mr-1">
+                   {/* Speech bubble */}
+                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
+                     <div className={`bg-gradient-to-r ${isRunning ? 'from-rose-500 to-red-600 shadow-[0_4px_10px_rgba(239,68,68,0.3)]' : 'from-emerald-500 to-green-600 shadow-[0_4px_10px_rgba(16,185,129,0.3)]'} text-white text-[12px] font-black py-1.5 px-3 rounded-2xl border-2 border-white flex items-center gap-1 whitespace-nowrap animate-bounce`}>
+                       <span>{isRunning ? 'STOP' : 'RUN'}</span>
+                       <span>{isRunning ? '🛑' : '🚩'}</span>
+                     </div>
+                     <div className={`w-3 h-3 ${isRunning ? 'bg-red-600' : 'bg-green-600'} rotate-45 -mt-1.5 border-r-2 border-b-2 border-white`} />
+                   </div>
+
+                   {/* Circular green flag run/stop button */}
+                   {isRunning ? (
+                     <motion.button
+                       whileHover={{ scale: 1.1, translateY: -2 }}
+                       whileTap={{ scale: 0.9 }}
+                       onClick={stopSimulation}
+                       className="w-11 h-11 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#991b1b] transition-all cursor-pointer"
+                       title="עצור פרויקט"
+                     >
+                       <Square className="w-5 h-5 fill-current" />
+                     </motion.button>
+                   ) : (
+                     <motion.button
+                       whileHover={{ scale: 1.1, translateY: -2 }}
+                       whileTap={{ scale: 0.9 }}
+                       onClick={runSimulation}
+                       className="w-11 h-11 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#16a34a] transition-all cursor-pointer"
+                       title="הפעל פרויקט"
+                     >
+                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                         <path d="M6 3v18h2v-7h10l-2-5 2-5H6z"/>
+                       </svg>
+                     </motion.button>
+                   )}
+                </div>
+
+                {/* Save and Load container with a beautiful speech bubble above */}
+                <div className="relative flex flex-col items-center mr-1">
+                   {/* Speech bubble */}
+                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
+                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(37,99,235,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
+                       <span>שמירה וטעינה</span>
+                       <span className="text-sm">✨</span>
+                     </div>
+                     <div className="w-3 h-3 bg-indigo-600 rotate-45 -mt-1.5 border-r-2 border-b-2 border-white" />
+                   </div>
+
+                   <div className="flex gap-2">
+                     {/* Save button */}
+                     <motion.button
+                       whileHover={{ scale: 1.1, translateY: -2 }}
+                       whileTap={{ scale: 0.9 }}
+                       onClick={handleSaveProject}
+                       className="w-11 h-11 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#1d4ed8] transition-all cursor-pointer"
+                       title="שמור פרויקט"
+                     >
+                       <Save className="w-5 h-5 stroke-[2.5]" />
+                     </motion.button>
+
+                     {/* Load button */}
+                     <motion.button
+                       whileHover={{ scale: 1.1, translateY: -2 }}
+                       whileTap={{ scale: 0.9 }}
+                       onClick={handleLoadProjectClick}
+                       className="w-11 h-11 bg-amber-500 hover:bg-amber-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#b45309] transition-all cursor-pointer"
+                       title="טען פרויקט"
+                     >
+                       <FolderOpen className="w-5 h-5 stroke-[2.5]" />
+                     </motion.button>
+                   </div>
+                </div>
+
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange} 
+                  accept=".json" 
+                  className="hidden" 
+                />
+
+                <div className="h-6 w-[2px] bg-slate-200 mx-1" />
+
                 <button 
                   onClick={() => setIsEditorExpanded(!isEditorExpanded)}
-                  className="p-3 bg-[#e2e8f0] hover:bg-slate-300 rounded-2xl text-[#1e293b] transition-all duration-300"
+                  className="p-3 bg-[#e2e8f0] hover:bg-slate-300 rounded-2xl text-[#1e293b] transition-all duration-300 cursor-pointer"
                   title={isEditorExpanded ? 'Collapse Editor' : 'Expand Editor'}
                 >
                   {isEditorExpanded ? <Minimize2 className="w-8 h-8" /> : <Maximize2 className="w-8 h-8" />}
                 </button>
-                <div className="w-3 h-3 rounded-full bg-[#e2e8f0]" />
-                <div className="w-3 h-3 rounded-full bg-[#e2e8f0]" />
-                <div className="w-3 h-3 rounded-full bg-[#e2e8f0]" />
              </div>
           </div>
           <div className="flex-1">
@@ -381,6 +499,28 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {/* Toast notifications */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-6 left-1/2 z-[100] flex items-center gap-3 px-6 py-3 bg-slate-900/95 text-white rounded-2xl shadow-2xl border border-slate-700/50 font-black text-sm"
+            style={{ direction: 'rtl' }}
+          >
+            <div className={`w-3.5 h-3.5 rounded-full ${toast.type === 'success' ? 'bg-[#4ade80]' : 'bg-[#f87171]'}`} />
+            <span>{toast.message}</span>
+            <button 
+              onClick={() => setToast(null)} 
+              className="mr-3 p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
