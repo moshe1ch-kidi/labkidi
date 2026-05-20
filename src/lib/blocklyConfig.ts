@@ -11,7 +11,7 @@ export const COLORS = {
 };
 
 // Define custom blocks for Micro:bit
-export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, push: string, motor: string, servo: string, led: string, buzzer: string }) => {
+export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, push: string, motor: string, servo: string, led: string, buzzer: string, forever: string, wait: string, repeat: string }) => {
   // Buzzer / Play Tone
   Blockly.Blocks['microbit_buzzer'] = {
     init: function() {
@@ -160,7 +160,8 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   Blockly.Blocks['microbit_forever'] = {
     init: function() {
       this.appendDummyInput()
-          .appendField('forever');
+          .appendField('forever')
+          .appendField(new Blockly.FieldImage(icons.forever, 30, 30, 'forever'));
       this.appendStatementInput('DO')
           .setCheck(null);
       this.setPreviousStatement(true, null);
@@ -351,7 +352,8 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
       this.appendDummyInput()
           .appendField('Wait')
           .appendField(new NumericField('1'), 'SEC')
-          .appendField('Sec');
+          .appendField('Sec')
+          .appendField(new Blockly.FieldImage(icons.wait, 30, 30, 'wait'));
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
       this.setColour(COLORS.CONTROL);
@@ -369,7 +371,8 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     init: function() {
       this.appendDummyInput()
           .appendField('repeat')
-          .appendField(new NumericField('10'), 'TIMES');
+          .appendField(new NumericField('10'), 'TIMES')
+          .appendField(new Blockly.FieldImage(icons.repeat, 30, 30, 'repeat'));
       this.appendStatementInput('DO')
           .setCheck(null);
       this.setPreviousStatement(true, null);
