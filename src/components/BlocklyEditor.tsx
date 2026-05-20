@@ -11,7 +11,7 @@ import MoistureIcon from '@icons/Moisture.png';
 import PotentiometerIcon from '@icons/Potentiometer-1.png';
 import PushIcon from '@icons/push-1.png';
 import UltrasonicIcon from '@icons/ultrasonic-1.png';
-import LDRIcon from '@icons/LDR.png';
+import LDRIcon from '@icons/ldr.png';
 import VarIcon from '@icons/var.png';
 import MathIcon from '@icons/math.png';
 import OutputIcon from '@icons/output-1.png';
