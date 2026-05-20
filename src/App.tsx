@@ -1,10 +1,108 @@
 import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code } from 'lucide-react';
+import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code, Trophy, Sparkles, Lightbulb, CheckCircle2, ChevronRight, ChevronLeft, Award } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
 import { ComponentInstance, ComponentType } from './types';
 import Board from './components/Board';
 import BlocklyEditor, { BlocklyEditorRef } from './components/BlocklyEditor';
+
+export interface LearningTask {
+  id: number;
+  title: string;
+  description: string;
+  difficulty: 'קל' | 'בינוני' | 'קשה';
+  emoji: string;
+  objective: string;
+  hints: string[];
+  testCode: (jsCode: string) => { success: boolean; feedback: string };
+}
+
+const LEARNING_TASKS: LearningTask[] = [
+  {
+    id: 1,
+    title: 'הבהוב לדים (משימה 1 🚨)',
+    description: 'גרמו לנורת ה-LED האדומה להידלק ולהכבות שוב ושוב כמו פנס חירום!',
+    difficulty: 'קל',
+    emoji: '🚨',
+    objective: 'להפעיל לולאה נצחית (forever) שבה הלד האדום נדלק למשך שנייה אחת, ואז נכבה למשך שנייה אחת.',
+    hints: [
+      'גררו את לבנת forever מסדרת הבקרה של המיקרוביט.',
+      'הוסיפו בתוכה לבנת "Red Led ON" (מקטגוריית Output/פלט).',
+      'הוסיפו מיד אחריה לבנת המתנה של שנייה אחת (Wait 1 Sec מהבקרה).',
+      'כעת הוסיפו לבנת "Red Led OFF".',
+      'חובה להוסיף לבנת המתנה נוספת (Wait 1 Sec) בסוף כדי שהנורה תישאר כבויה לרגע לפני שהלולאה מתחילה שוב!'
+    ],
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasRedOn = cleaned.includes("setLedState('red',1)") || cleaned.includes('setLedState("red",1)');
+      const hasRedOff = cleaned.includes("setLedState('red',0)") || cleaned.includes('setLedState("red",0)');
+      const hasWait = cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasRedOn) {
+        return { success: false, feedback: 'שכחתם להדליק את הלד האדום (Red Led ON)!' };
+      }
+      if (!hasRedOff) {
+        return { success: false, feedback: 'הדלקתם את הלד, אבל שכחתם לכבות אותו (Red Led OFF)!' };
+      }
+      if (!hasWait) {
+        return { success: false, feedback: 'הלד נדלק ונכבה מהר מדי! הוסיפו לבנות המתנה (Wait 1 Sec) לאחר כל שינוי מצב.' };
+      }
+      
+      const waitCount = (jsCode.match(/setTimeout|Promise/g) || []).length;
+      if (waitCount < 2) {
+        return { success: false, feedback: 'טיפ קטן: כדאי להוסיף שתי לבנות המתנה של שנייה (אחת אחרי ההדלקה ואחת אחרי הכיבוי) כדי שהעיניים יספיקו לראות את ההבהוב!' };
+      }
+
+      return { success: true, feedback: 'כל הכבוד! הקוד שלכם מושלם! הלד משלים הבהוב שלם בהצלחה.' };
+    }
+  },
+  {
+    id: 2,
+    title: 'הבהוב ממתג (משימה 2 🚥)',
+    description: 'גרמו לנורת ה-LED האדומה והצהובה להתחלף ביניהן בקצביות (כמו רמזור ממתג)!',
+    difficulty: 'בינוני',
+    emoji: '🚥',
+    objective: 'ליצור הבהוב ממתג: כשהלד האדום דולק, הלד הצהוב כבוי - וכשהלד האדום נכבה, הלד הצהוב נדלק!',
+    hints: [
+      'התחילו בתוך לבנת forever.',
+      'שלב א\': הדליקו את האדום (Red Led ON) וכבו את הצהוב (Yellow Led OFF).',
+      'הוסיפו המתנה של שנייה אחת (Wait 1 Sec).',
+      'שלב ב\': כבו את האדום (Red Led OFF) והדליקו את הצהוב (Yellow Led ON).',
+      'הוסיפו המתנה נוספת של שנייה אחת (Wait 1 Sec) בסוף הלולאה כדי לאפשר הצגת המצב השני!'
+    ],
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasRedOn = cleaned.includes("setLedState('red',1)") || cleaned.includes('setLedState("red",1)');
+      const hasRedOff = cleaned.includes("setLedState('red',0)") || cleaned.includes('setLedState("red",0)');
+      const hasYellowOn = cleaned.includes("setLedState('yellow',1)") || cleaned.includes('setLedState("yellow",1)');
+      const hasYellowOff = cleaned.includes("setLedState('yellow',0)") || cleaned.includes('setLedState("yellow",0)');
+      const hasWait = cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasRedOn || !hasRedOff) {
+        return { success: false, feedback: 'משהו חסר עם הלד האדום: ודאו שיש לכם קוד המפעיל (ON) ומכבה (OFF) אותו בכל מחזור!' };
+      }
+      if (!hasYellowOn || !hasYellowOff) {
+        return { success: false, feedback: 'משהו חסר עם הלד הצהוב: ודאו שיש לכם קוד המפעיל (ON) ומכבה (OFF) אותו בכל מחזור!' };
+      }
+      if (!hasWait) {
+        return { success: false, feedback: 'הלדים יתחלפו מהר מדי מבלי שתוכלו להבחין בהם! הוסיפו לבנות המתנה (Wait 1 Sec) לאחר כל שינוי מצב.' };
+      }
+      
+      const waitCount = (jsCode.match(/setTimeout|Promise/g) || []).length;
+      if (waitCount < 2) {
+        return { success: false, feedback: 'הוסיפו לפחות שתי לבנות המתנה (אחת לכל מצב) כדי שההבהוב הדו-צבעי יראה בבירור ממתג!' };
+      }
+
+      return { success: true, feedback: 'מדהים ביותר! פתרתם את האתגר של הבהוב ממתג בין האדום לצהוב כמו מקצוענים! 🏆' };
+    }
+  }
+];
 
 export default function App() {
   const [components, setComponents] = useState<ComponentInstance[]>(INITIAL_COMPONENTS);
@@ -18,6 +116,12 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pythonCode, setPythonCode] = useState('');
   const [isPythonModalOpen, setIsPythonModalOpen] = useState(false);
+
+  // States for interactive learning tasks
+  const [isTaskPanelOpen, setIsTaskPanelOpen] = useState(false);
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
+  const [taskFeedback, setTaskFeedback] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
 
   const handleShowPythonCode = () => {
     if (editorRef.current) {
@@ -339,7 +443,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center text-blue-500 hover:bg-blue-100 cursor-pointer shadow-sm transition-all">
             <Info className="w-6 h-6" />
           </div>
@@ -427,7 +531,7 @@ export default function App() {
                    </div>
                 </div>
 
-                {/* Python Code viewer container with speech bubble */}
+                {/* Python Code viewer container with speech bubble - UPDATED */}
                 <div className="relative flex flex-col items-center mr-1">
                    {/* Speech bubble */}
                    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
@@ -450,6 +554,36 @@ export default function App() {
                      </motion.button>
                    </div>
                 </div>
+
+                 {/* Learning Tasks container with speech bubble */}
+                 <div className="relative flex flex-col items-center mr-1">
+                    {/* Speech bubble */}
+                    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
+                      <div className="bg-gradient-to-r from-[#ff9f1c] to-amber-500 text-white text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(245,158,11,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
+                        <span>כרטיסיות משימה</span>
+                        <span className="text-sm">🏆</span>
+                      </div>
+                      <div className="w-3 h-3 bg-amber-500 rotate-45 -mt-1.5 border-r-2 border-b-2 border-white" />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.1, translateY: -2 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setIsTaskPanelOpen(true)}
+                        className="w-11 h-11 bg-[#ff9f1c] hover:bg-[#ff8f00] text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#d97706] transition-all cursor-pointer relative"
+                        title="כרטיסיות משימה"
+                      >
+                        <Trophy className="w-5 h-5 stroke-[2.5] text-white" />
+                        {completedTasks.length < LEARNING_TASKS.length && (
+                          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 border-2 border-white"></span>
+                          </span>
+                        )}
+                      </motion.button>
+                     </div>
+                 </div>
 
                 <input 
                   type="file" 
@@ -537,6 +671,182 @@ export default function App() {
              </div>
           </div>
         </section>
+
+        {/* מגירת כרטיסיות למידה לילדים */}
+        <AnimatePresence>
+          {isTaskPanelOpen && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              {/* Backdrop with a beautiful blur effect */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsTaskPanelOpen(false)}
+                className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+              />
+
+              {/* Modal Container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+                className="bg-white rounded-[2.5rem] border-4 border-amber-400 shadow-2xl relative w-full h-[85vh] max-w-lg overflow-hidden flex flex-col z-[100]"
+                style={{ direction: 'rtl' }}
+              >
+                {/* Header */}
+                <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-4 flex items-center justify-between shrink-0 border-b-4 border-amber-600">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center shadow-inner">
+                      <Trophy className="w-6 h-6 stroke-[2.5] text-yellow-300 animate-pulse" />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-lg tracking-tight">משימות וכרטיסיות למידה 🏆</h3>
+                      <p className="text-white/90 text-xs font-bold">השלימו את האתגרים וזכו בגביעים!</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsTaskPanelOpen(false)}
+                    className="p-2 hover:bg-black/10 rounded-xl transition-all cursor-pointer text-white"
+                  >
+                    <X className="w-6 h-6 stroke-[2.5]" />
+                  </button>
+                </div>
+
+                {/* Scrollable body with custom styles to prevent cutoff */}
+                <div className="p-6 overflow-y-auto flex-1 flex flex-col gap-4 bg-[#fafafb] pb-16">
+                  
+                  {/* Progress bar */}
+                  <div className="flex items-center justify-between border-2 border-slate-200 bg-white p-3 rounded-2xl shadow-sm shrink-0">
+                    <span className="text-xs font-black text-[#64748b] bg-[#f1f5f9] px-2.5 py-1 rounded-full border border-slate-200">
+                      משימה {currentTaskIndex + 1} מתוך {LEARNING_TASKS.length}
+                    </span>
+                    <span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${
+                      completedTasks.includes(LEARNING_TASKS[currentTaskIndex].id) 
+                        ? 'bg-green-100 text-green-700 border border-green-300' 
+                        : 'bg-amber-100 text-amber-700 border border-amber-300'
+                    }`}>
+                      {completedTasks.includes(LEARNING_TASKS[currentTaskIndex].id) ? 'הושלמה בהצלחה! 🎉' : 'בתהליך 🛠️'}
+                    </span>
+                  </div>
+
+                  {/* Main Task Card */}
+                  <div className="bg-white rounded-3xl border-4 border-[#fef08a] p-5 shadow-md relative overflow-hidden flex flex-col gap-3 shrink-0">
+                    <div className="absolute top-0 right-0 p-3 text-5xl opacity-10 pointer-events-none font-black select-none">
+                      {LEARNING_TASKS[currentTaskIndex].emoji}
+                    </div>
+
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-3xl">{LEARNING_TASKS[currentTaskIndex].emoji}</span>
+                      <h3 className="font-black text-slate-800 text-base leading-snug">
+                        {LEARNING_TASKS[currentTaskIndex].title}
+                      </h3>
+                    </div>
+
+                    <div className="text-[11px] font-black text-slate-500 bg-[#fefcbf] border-2 border-[#fef08a] px-3 py-1 rounded-xl self-start">
+                      רמת קושי: <span className="text-amber-700">{LEARNING_TASKS[currentTaskIndex].difficulty}</span>
+                    </div>
+
+                    <p className="text-slate-600 text-sm font-bold leading-relaxed">
+                      {LEARNING_TASKS[currentTaskIndex].description}
+                    </p>
+
+                    {/* Objective (Target) */}
+                    <div className="bg-[#f0f9ff] text-sky-800 p-4 rounded-2xl border-2 border-[#bae6fd] flex flex-col gap-1 shadow-sm">
+                      <span className="text-[11px] font-black text-sky-600 uppercase tracking-wider flex items-center gap-1">
+                        <Sparkles className="w-4 h-4 text-sky-500" /> המטרה שלכם:
+                      </span>
+                      <p className="text-xs font-bold leading-relaxed">{LEARNING_TASKS[currentTaskIndex].objective}</p>
+                    </div>
+
+                    {/* Hints step-by-step list */}
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[11px] font-black text-slate-500 flex items-center gap-1">
+                        <Lightbulb className="w-4 h-4 text-amber-500 animate-pulse" /> כיצד לפתור? שלב אחר שלב:
+                      </span>
+                      <ul className="flex flex-col gap-2.5 bg-[#f8fafc] border-2 border-[#e2e8f0] p-4 rounded-2xl text-xs font-bold text-slate-600 leading-relaxed list-decimal list-inside">
+                        {LEARNING_TASKS[currentTaskIndex].hints.map((hint, idx) => (
+                          <li key={idx} className="indent-[-12px] pr-3 select-none">
+                            {hint}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Test my Code controls */}
+                    <div className="border-t-2 border-slate-100 pt-4 flex flex-col gap-3">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          const check = LEARNING_TASKS[currentTaskIndex].testCode(currentCode);
+                          if (check.success) {
+                            setCompletedTasks(prev => [...new Set([...prev, LEARNING_TASKS[currentTaskIndex].id])]);
+                            setTaskFeedback({ type: 'success', message: check.feedback });
+                            showToast('כל הכבוד! פתרת את המשימה בהצלחה! 🎉', 'success');
+                          } else {
+                            setTaskFeedback({ type: 'error', message: check.feedback });
+                            showToast('עדיין לא מדויק, נסה שוב! ❤️', 'error');
+                          }
+                        }}
+                        className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl border-2 border-white shadow-[0_4px_0_#10b981] hover:shadow-[0_2px_0_#10b981] hover:translate-y-[2px] transition-all cursor-pointer font-black text-sm flex items-center justify-center gap-2"
+                      >
+                        <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
+                        <span>בדוק את הקוד שלי בסביבה! 🚀</span>
+                      </motion.button>
+
+                      {/* Check Feedback container with animations */}
+                      <AnimatePresence mode="wait">
+                        {taskFeedback.type && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className={`p-4 rounded-2xl border-2 text-xs font-bold leading-relaxed flex flex-col gap-1.5 shadow-sm ${
+                              taskFeedback.type === 'success' 
+                                ? 'bg-green-50 border-green-200 text-green-800' 
+                                : 'bg-rose-50 border-rose-200 text-rose-800'
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 font-black text-xs">
+                              {taskFeedback.type === 'success' ? '🎯 הצלחה!' : '💡 טיפ קטן להשלמה:'}
+                            </div>
+                            <p>{taskFeedback.message}</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                  {/* Back and Next tasks selection - grouped styled buttons matching save/load style */}
+                  <div className="flex gap-2 shrink-0 justify-between items-center bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm mt-auto">
+                    <button
+                      disabled={currentTaskIndex === 0}
+                      onClick={() => {
+                        setCurrentTaskIndex(prev => prev - 1);
+                        setTaskFeedback({ type: null, message: '' });
+                      }}
+                      className="p-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 rounded-xl transition-all cursor-pointer border-2 border-slate-200 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                    </button>
+                    <span className="text-xs font-black text-slate-700">בחר משימה</span>
+                    <button
+                      disabled={currentTaskIndex === LEARNING_TASKS.length - 1}
+                      onClick={() => {
+                        setCurrentTaskIndex(prev => prev + 1);
+                        setTaskFeedback({ type: null, message: '' });
+                      }}
+                      className="p-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 rounded-xl transition-all cursor-pointer border-2 border-slate-200 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Toast notifications */}
