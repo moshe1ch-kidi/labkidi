@@ -15,9 +15,10 @@ interface ComponentBoxProps {
   instance: ComponentInstance;
   onValueChange?: (value: number) => void;
   onHover?: (instance: ComponentInstance | null) => void;
+  onSwapClick?: (id: string) => void;
 }
 
-export default function ComponentBox({ instance, onValueChange, onHover }: ComponentBoxProps) {
+export default function ComponentBox({ instance, onValueChange, onHover, onSwapClick }: ComponentBoxProps) {
   const isInput = ['light_sensor', 'temp_sensor', 'pir_sensor', 'potentiometer', 'button', 'switch', 'humidity_sensor', 'ultrasonic_sensor', 'red_led', 'yellow_led', 'motor', 'servo', 'stepper_motor'].includes(instance.type);
 
   const getRange = () => {
@@ -450,6 +451,21 @@ export default function ComponentBox({ instance, onValueChange, onHover }: Compo
         onMouseEnter={() => onHover?.(instance)}
         onMouseLeave={() => onHover?.(null)}
       >
+        {/* Plus / Swap Component Button */}
+        {onSwapClick && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSwapClick(instance.id);
+            }}
+            className="absolute -top-1.5 -right-1.5 z-[55] w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-black text-lg flex items-center justify-center border-2 border-white shadow-md opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 active:scale-90 hover:scale-110 transition-all duration-200 cursor-pointer"
+            title="החלף רכיב / חיישן"
+            id={`swap-${instance.id}`}
+          >
+            +
+          </button>
+        )}
+
         {/* Hover Tooltip Bubble */}
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-[60] -translate-y-2 group-hover:translate-y-0">
            <div className="bg-slate-900 text-white text-[10px] font-black px-3 py-1.5 rounded-xl shadow-2xl whitespace-nowrap relative border border-slate-700 flex items-center gap-2">
