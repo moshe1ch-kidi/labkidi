@@ -5,6 +5,7 @@ import { INITIAL_COMPONENTS } from './constants';
 import { ComponentInstance, ComponentType } from './types';
 import Board from './components/Board';
 import BlocklyEditor, { BlocklyEditorRef } from './components/BlocklyEditor';
+import smartGateBarrierImg from './assets/images/smart_gate_barrier_1779353380715.png';
 
 export interface LearningTask {
   id: number;
@@ -14,6 +15,7 @@ export interface LearningTask {
   emoji: string;
   objective: string;
   hints: string[];
+  image?: string;
   testCode: (jsCode: string) => { success: boolean; feedback: string };
 }
 
@@ -174,6 +176,145 @@ const LEARNING_TASKS: LearningTask[] = [
       }
       
       return { success: true, feedback: 'פשוט וואו! לקחתם שליטה מלאה על עוצמת האור ובניתם עמעם תאורה מושלם כמו בבית חכם אמיתי! גאים בכם! 🏆🌟😎' };
+    }
+  },
+  {
+    id: 5,
+    title: '💡 פנס רחוב חכם (משימה 5)',
+    description: 'בשיעור זה, תלמדו כיצד לקבל מידע על עוצמת האור ממודול חיישן האור וכיצד לשלוט בתאורת ה-LED על סמך נתונים אלה. על ידי קביעת רמות בהירות שונות, תוכלו להשיג שליטה חכמה במצב הדלקה/כיבוי של נורת ה-LED.',
+    difficulty: 'מדען צעיר 🧪',
+    emoji: '💡',
+    objective: 'לשלוט בנורת הלד הצהובה (Yellow LED) על סמך נתוני חיישן האור (LDR) - כשיש חושך הדליקו את האור, וכשיש אור שמש כבו אותו!',
+    hints: [
+      'נשתמש בלבנת "לעולמים" (forever) כדי שהמערכת תקשיב לחיישן ותגיב לשינויים ללא הפסקה.',
+      'ניעזר בלבנת תנאי "אם ... אחרת" (if ... else) מקטגוריית הלוגיקה.',
+      'נבדוק האם הערך שמתקבל מלבנת "Light Sensor(LDR)" (בפין P1) קטן מ-300 (או מספר קטן אחר שמסמל חושך).',
+      'אם התנאי מתקיים (כלומר חשוך) - נדליק את הלד הצהוב (Yellow Led ON), ואחרת (כלומר מואר) - נכבה אותו (Yellow Led OFF)!'
+    ],
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasLdr = cleaned.includes("analogRead('P1')") || cleaned.includes('analogRead("P1")');
+      const hasYellowOn = cleaned.includes("setLedState('yellow',1)") || cleaned.includes('setLedState("yellow",1)');
+      const hasYellowOff = cleaned.includes("setLedState('yellow',0)") || cleaned.includes('setLedState("yellow",0)');
+      const hasIf = cleaned.includes('if(') || cleaned.includes('if ');
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasLdr) {
+        return { success: false, feedback: 'אופס! שכחתם לקרוא את רמות האור מחיישן האור (Light Sensor LDR) בפין P1. גררו את הלבנה "Light Sensor(LDR)" לקוד.' };
+      }
+      if (!hasIf) {
+        return { success: false, feedback: 'צריך לבצע בדיקה לוגית - האם חשוך עכשיו? השתמשו בלבנת "אם... אחרת" (if... else) או "אם" (if) מקטגוריית לוגיקה!' };
+      }
+      if (!hasYellowOn) {
+        return { success: false, feedback: 'ודאו שאתם מדליקים (ON) את נורת הלד הצהובה (Yellow Led) כשיורד החושך!' };
+      }
+      if (!hasYellowOff) {
+        return { success: false, feedback: 'שכחתם לכבות (OFF) את הלד הצהוב (Yellow Led) כשיש מספיק אור שמש!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שפנס הרחוב יתעדכן כל הזמן ובאופן אוטומטי, ודאו שעטפתם את כל הלבנות בתוך לולאת forever!' };
+      }
+      
+      return { success: true, feedback: 'כל הכבוד! בניתם מערכת פנס רחוב חכם לתפארת! האור נדלק אוטומטית כשחשוך וכבה ביום! 💡🤖🌟' };
+    }
+  },
+  {
+    id: 6,
+    title: '🚨 אזעקת מכשול חכמה (משימה 6)',
+    description: 'בשיעור זה, נחקור את מודול חיישן המרחק האולטרה-סוני (Ultrasonic Sensor) ונלמד כיצד לשלב אותו עם הזמזם (Buzzer) ונורת ה-LED כדי ליצור מערכת התרעה למניעת תאונות!',
+    difficulty: 'קוסם חיישנים 🧙‍♂️',
+    emoji: '🚨',
+    objective: 'ליצור מערכת אזעקת קרבה: כאשר חיישן המרחק מזהה מכשול קרוב (מרחק קטן מ-20 ס״מ), נורת הלד האדומה תידלק והזמזם ישמיע צליל אזהרה. כשהמכשול מתרחק - האזעקה והנורה יכבו!',
+    hints: [
+      'נתחיל עם לבנת "לעולמים" (forever) כדי להאזין לחיישן המרחק ברציפות.',
+      'נגרור לבנת "אם... אחרת" (if... else) מקטגוריית לוגיקה.',
+      'נבדוק בתוך התנאי האם הערך המוחזר מלבנת "Ultrasonic" קטן מ-20.',
+      'במקרה של קירבה (בתוך ה-"אם"): נפעיל את הלד האדום (Red Led ON) ונוריד קצת רעש אזהרה בעזרת לבנת "Buzzer" (playTone).',
+      'במקרה הרגיל (בתוך ה-"אחרת"): נכבה את הלד האדום (Red Led OFF) כדי לסמן שהכול תקין!'
+    ],
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasUltrasonic = cleaned.includes("ultrasonicRead(") || cleaned.includes("ultrasonicRead");
+      const hasBuzzer = cleaned.includes("playTone");
+      const hasLedOn = cleaned.includes("setLedState('red',1)") || cleaned.includes('setLedState("red",1)') || cleaned.includes("setLedState('yellow',1)") || cleaned.includes('setLedState("yellow",1)');
+      const hasLedOff = cleaned.includes("setLedState('red',0)") || cleaned.includes('setLedState("red",0)') || cleaned.includes("setLedState('yellow',0)") || cleaned.includes('setLedState("yellow",0)');
+      const hasIf = cleaned.includes('if(') || cleaned.includes('if ');
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasUltrasonic) {
+        return { success: false, feedback: 'אופס! שכחתם לקרוא את המרחק מחיישן המרחק האולטרה-סוני (Ultrasonic Sensor). גררו את לבנת "Ultrasonic" לקוד.' };
+      }
+      if (!hasIf) {
+        return { success: false, feedback: 'צריך לבצע בדיקה לוגית - האם יש מכשול קרוב? השתמשו בלבנת "אם... אחרת" (if... else) או "אם" (if) מקטגוריית לוגיקה!' };
+      }
+      if (!hasBuzzer) {
+        return { success: false, feedback: 'איפה קול האזהרה? שכחתם להפעיל את הזמזם (Buzzer) כדי להשמיע התרעה קולית כשהמכשול קרוב!' };
+      }
+      if (!hasLedOn) {
+        return { success: false, feedback: 'ודאו שאתם מדליקים (ON) את נורת הלד האדומה או הצהובה כסימן אזהרה ויזואלי להתקרבות המכשול!' };
+      }
+      if (!hasLedOff) {
+        return { success: false, feedback: 'שכחתם לכבות (OFF) את נורת הלד כאשר המכשול מתרחק ואינו מסוכן עוד!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שהאזעקה תמשיך לנטר את השטח כל הזמן בשידור חי, ודאו שעטפתם את כל הלבנות בתוך לולאת forever!' };
+      }
+      
+      return { success: true, feedback: 'יוצא מן הכלל! בניתם מערכת אזעקת מרחק מונעת תאונות חכמה ומשוכללת! כבוד גדול! 🚨🔊🤖🏆' };
+    }
+  },
+  {
+    id: 7,
+    title: '🚧 מחסום כביש חשמלי חכם (משימה 7)',
+    description: 'בשיעור זה נבנה דגם של מחסום כביש חשמלי / שער חניה חכם הבנוי על מנוע סרוו (Servo Motor). נלמד כיצד להרים ולהוריד את זרוע המחסום באופן אוטומטי ומבוקר!',
+    difficulty: 'מהנדס רובוטיקה 🤖',
+    emoji: '🚧',
+    objective: 'לתכנת את מנוע הסרוו כך שיפתח ויסגור את זרוע המחסום אוטומטית שוב ושוב: זווית 0 מעלות מסמלת שהמחסום סגור, וזווית 180 מעלות מסמלת שהמחסום פתוח לרווחה, עם השהיית מעבר של שנייה שלמה.',
+    hints: [
+      'נזדקק ללבנת "לעולמים" (forever) כדי להריץ את מחזור פתיחת וסגירת השער באופן קבוע וחלק.',
+      'נגרור לבנת "Servo Angle" ונקבע את הזווית ל-0 מעלות כדי לסגור את המחסום.',
+      'נגרור לבנת המתנה "Wait 1 Sec" כדי לדמות את עצירת המכוניות הממתינות לפני המחסום.',
+      'נגרור לבנת "Servo Angle" נוספת ונקבע אותה ל-180 מעלות כדי להרים את המחסום ולפתוח את השער.',
+      'נוסיף לבנת המתנה נוספת "Wait 1 Sec" כדי לתת למכוניות לעבור בבטחה לפני שהמחסום נסגר בשנית!'
+    ],
+    image: smartGateBarrierImg,
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasServo0 = cleaned.includes("setServoAngle(0)") || cleaned.includes("setServoAngle('0')") || cleaned.includes('setServoAngle("0")');
+      const hasServo180 = cleaned.includes("setServoAngle(180)") || cleaned.includes("setServoAngle('180')") || cleaned.includes('setServoAngle("180")');
+      const hasWait = cleaned.includes("setTimeout") || cleaned.includes("Promise");
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      const hasServoAny = cleaned.includes("setServoAngle");
+
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasServoAny) {
+        return { success: false, feedback: 'אופס! שכחתם להשתמש בלבנת קביעת זווית מנוע הסרוו. גררו את לבנת "Servo Angle" לקוד.' };
+      }
+      if (!hasServo0 && !hasServo180) {
+        return { success: false, feedback: 'ודאו שאתם מגדירים את זווית מנוע הסרוו ל-0 מעלות (סגור) וגם ל-180 מעלות (פתוח) כדי ליצור מחזור פתיחה וסגירה שלם!' };
+      }
+      if (!hasServo0) {
+        return { success: false, feedback: 'מצוין, אך שכחתם להוסיף קביעת זווית סרוו ל-0 מעלות כדי להוריד את המחסום לאחר שהרכבים עברו!' };
+      }
+      if (!hasServo180) {
+        return { success: false, feedback: 'מצוין, אך שכחתם להוסיף קביעת זווית סרוו ל-180 מעלות כדי להרים את המחסום לפתיחת השער!' };
+      }
+      if (!hasWait) {
+        return { success: false, feedback: 'שכחתם להוסיף השהייה! השתמשו בלבנת "Wait" (המתנה) של שנייה אחת לפחות בין פתיחה וסגירה, כדי שהמנוע יספיק לזוז והמכוניות יספיקו לעבור בבטחה!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שמחסום הכביש ימשיך לעבוד שוב ושוב עבור כל המכוניות הבאות, ודאו שעטפתם את כל הלבנות בתוך לולאת forever!' };
+      }
+      
+      return { success: true, feedback: 'מדהים ומבריק! זרוע המחסום החשמלי הווירטואלי שלכם עולה ויורדת ללא הפסקה ובדיוק מושלם בין 0 ל-180 מעלות! אתם פשוט מהנדסי רובוטיקה מומחים! 🚧⚙️🦾🤖🏆' };
     }
   }
 ];
@@ -828,6 +969,17 @@ export default function App() {
                     <p className="text-slate-600 text-sm font-bold leading-relaxed">
                       {LEARNING_TASKS[currentTaskIndex].description}
                     </p>
+
+                    {LEARNING_TASKS[currentTaskIndex].image && (
+                      <div className="w-full h-48 rounded-2xl overflow-hidden border-4 border-slate-100 shadow-sm bg-white relative flex items-center justify-center">
+                        <img 
+                          src={LEARNING_TASKS[currentTaskIndex].image} 
+                          alt={LEARNING_TASKS[currentTaskIndex].title}
+                          className="w-full h-full object-contain"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                    )}
 
                     {/* Objective (Target) */}
                     <div className="bg-[#f0f9ff] text-sky-800 p-4 rounded-2xl border-2 border-[#bae6fd] flex flex-col gap-1 shadow-sm">
