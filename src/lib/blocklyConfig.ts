@@ -1,4 +1,4 @@
- import * as Blockly from 'blockly';
+import * as Blockly from 'blockly';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import { pythonGenerator, Order as PythonOrder } from 'blockly/python';
 import { NumericField } from './NumericField';
@@ -224,7 +224,7 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
       this.appendDummyInput()
           .appendField('Digital Write Pin')
           .appendField(new Blockly.FieldDropdown([
-            ['P0', 'P0'], ['P1', 'P1'], ['P2', 'P2'], ['P3', 'P3'], ['P4', 'P4'], ['P8', 'P8'], ['P10', 'P10'], ['P16', 'P16']
+            ['P0', 'P0'], ['P1', 'P1'], ['P2', 'P2'], ['P3', 'P3'], ['P4', 'P4'], ['P5', 'P5'], ['P6', 'P6'], ['P7', 'P7'], ['P8', 'P8'], ['P10', 'P10'], ['P16', 'P16']
           ]), 'PIN')
           .appendField('To')
           .appendField(new Blockly.FieldDropdown([['1', '1'], ['0', '0']]), 'VALUE');
@@ -244,6 +244,34 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     const pin = block.getFieldValue('PIN');
     const value = block.getFieldValue('VALUE');
     return `microbit.digital_write('${pin}', ${value})\n`;
+  };
+
+  // Analog Output (Write)
+  Blockly.Blocks['microbit_analog_write'] = {
+    init: function() {
+      this.appendValueInput('VALUE')
+          .setCheck('Number')
+          .appendField('Analog Write Pin')
+          .appendField(new Blockly.FieldDropdown([
+            ['P0', 'P0'], ['P1', 'P1'], ['P2', 'P2'], ['P3', 'P3'], ['P4', 'P4'], ['P5', 'P5'], ['P6', 'P6'], ['P7', 'P7'], ['P8', 'P8'], ['P10', 'P10'], ['P16', 'P16']
+          ]), 'PIN')
+          .appendField('To');
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(COLORS.OUTPUT);
+    }
+  };
+
+  javascriptGenerator.forBlock['microbit_analog_write'] = function(block, generator) {
+    const pin = block.getFieldValue('PIN');
+    const value = generator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
+    return `await microbit.analogWrite('${pin}', ${value});\n`;
+  };
+
+  pythonGenerator.forBlock['microbit_analog_write'] = function(block, generator) {
+    const pin = block.getFieldValue('PIN');
+    const value = generator.valueToCode(block, 'VALUE', PythonOrder.ATOMIC) || '0';
+    return `microbit.analog_write('${pin}', ${value})\n`;
   };
 
   // Analog Read
@@ -646,6 +674,7 @@ export const toolbox = {
         { kind: 'block', type: 'microbit_yellow_led' },
         { kind: 'block', type: 'microbit_buzzer' },
         { kind: 'block', type: 'microbit_digital_write' },
+        { kind: 'block', type: 'microbit_analog_write' },
       ],
     },
     {
