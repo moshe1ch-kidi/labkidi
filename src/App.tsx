@@ -535,7 +535,7 @@ export default function App() {
                 <div className="w-4 h-4 rounded-full bg-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.5)] shrink-0" />
                 <span className="hidden sm:inline text-xs sm:text-sm font-black text-[#1e293b] uppercase tracking-wider">סביבת העבודה</span>
              </div>
-             <div className="flex gap-1.5 sm:gap-2.5 items-center shrink-0">
+             <div className="flex gap-1 sm:gap-2 items-center shrink-0">
                 {/* RUN / STOP Button container with a unique animated speech bubble */}
                 <div className="relative flex flex-col items-center mr-0.5 sm:mr-1 group">
                    {/* Speech bubble */}
@@ -553,20 +553,20 @@ export default function App() {
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={stopSimulation}
-                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#991b1b] transition-all cursor-pointer"
+                       className="w-[41px] h-[41px] sm:w-[51px] sm:h-[51px] shrink-0 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#991b1b] transition-all cursor-pointer"
                        title="עצור פרויקט"
                      >
-                       <Square className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
+                       <Square className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] fill-current" />
                      </motion.button>
                    ) : (
                      <motion.button
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={runSimulation}
-                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#16a34a] transition-all cursor-pointer"
+                       className="w-[41px] h-[41px] sm:w-[51px] sm:h-[51px] shrink-0 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#16a34a] transition-all cursor-pointer"
                        title="הפעל פרויקט"
                      >
-                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
+                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px]">
                          <path d="M6 3v18h2v-7h10l-2-5 2-5H6z"/>
                        </svg>
                      </motion.button>
@@ -590,10 +590,10 @@ export default function App() {
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={handleSaveProject}
-                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#1d4ed8] transition-all cursor-pointer"
+                       className="w-[41px] h-[41px] sm:w-[51px] sm:h-[51px] shrink-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#1d4ed8] transition-all cursor-pointer"
                        title="שמור פרויקט"
                      >
-                       <Save className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+                       <Save className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] stroke-[2.5]" />
                      </motion.button>
 
                      {/* Load button */}
@@ -601,10 +601,10 @@ export default function App() {
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={handleLoadProjectClick}
-                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-amber-500 hover:bg-amber-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#b45309] transition-all cursor-pointer"
+                       className="w-[41px] h-[41px] sm:w-[51px] sm:h-[51px] shrink-0 bg-amber-500 hover:bg-amber-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#b45309] transition-all cursor-pointer"
                        title="טען פרויקט"
                      >
-                       <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+                       <FolderOpen className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] stroke-[2.5]" />
                      </motion.button>
                    </div>
                 </div>
@@ -625,10 +625,10 @@ export default function App() {
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={handleShowPythonCode}
-                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-violet-600 hover:bg-violet-700 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#5b21b6] transition-all cursor-pointer"
+                       className="w-[41px] h-[41px] sm:w-[51px] sm:h-[51px] shrink-0 bg-violet-600 hover:bg-violet-700 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#5b21b6] transition-all cursor-pointer"
                        title="הצג קוד פייתון"
                      >
-                       <Code className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+                       <Code className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] stroke-[2.5]" />
                      </motion.button>
                    </div>
                 </div>
@@ -649,14 +649,14 @@ export default function App() {
                         whileHover={{ scale: 1.1, translateY: -2 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsTaskPanelOpen(true)}
-                        className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-[#ff9f1c] hover:bg-[#ff8f00] text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#d97706] transition-all cursor-pointer relative"
+                        className="w-[41px] h-[41px] sm:w-[51px] sm:h-[51px] shrink-0 bg-[#ff9f1c] hover:bg-[#ff8f00] text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#d97706] transition-all cursor-pointer relative"
                         title="כרטיסיות משימה"
                       >
-                        <Trophy className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] text-white" />
+                        <Trophy className="w-[18px] h-[18px] sm:w-[23px] sm:h-[23px] stroke-[2.5] text-white" />
                         {completedTasks.length < LEARNING_TASKS.length && (
-                          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                          <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 border-2 border-white"></span>
+                            <span className="relative inline-flex rounded-full h-4.5 w-4.5 bg-red-500 border-2 border-white"></span>
                           </span>
                         )}
                       </motion.button>
