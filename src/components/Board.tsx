@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ComponentInstance, ComponentType } from '../types';
 import ComponentBox from './ComponentBox';
@@ -147,6 +147,21 @@ export default function Board({ leds, components, onValueChange, onButtonPress, 
   const boardRef = useRef<HTMLDivElement>(null);
   const [swappingComponentId, setSwappingComponentId] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'sensors' | 'outputs'>('all');
+  const [boardScale, setBoardScale] = useState(1);
+
+  useEffect(() => {
+    if (!boardRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width;
+        // Design target: ~1080px. Bound multiplier between 0.4 and 1.25.
+        const scale = Math.max(0.4, Math.min(1.25, width / 1080));
+        setBoardScale(scale);
+      }
+    });
+    observer.observe(boardRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div ref={boardRef} className="board-container relative w-full aspect-video bg-gradient-to-br from-[#cbd5e1] via-[#f1f5f9] to-[#94a3b8] rounded-[3rem] shadow-[inset_0_-10px_20px_rgba(0,0,0,0.1),0_20px_60px_rgba(0,0,0,0.15)] flex items-center justify-center p-8 overflow-hidden border-[12px] border-[#94a3b8]">
@@ -180,7 +195,7 @@ export default function Board({ leds, components, onValueChange, onButtonPress, 
           />
 
           {/* Deep Blue Square for Micro:bit placement */}
-          <rect x="38" y="34" width="24" height="32" fill="#1A4D99" opacity="0.4" rx="4" />
+          <rect x="33.5" y="28" width="33" height="44" fill="#1A4D99" opacity="0.4" rx="4" />
         </svg>
 
         {/* Floating Labels (Subtle) */}
@@ -196,7 +211,7 @@ export default function Board({ leds, components, onValueChange, onButtonPress, 
       <div className="relative z-20 flex flex-col items-center">
         <motion.div 
           initial={{ scale: 0.5, opacity: 0, y: 30 }}
-          animate={{ scale: 0.48, opacity: 1, y: 0 }}
+          animate={{ scale: 0.65 * boardScale, opacity: 1, y: 0 }}
           transition={{ duration: 1, type: 'spring', bounce: 0.5 }}
           className="relative drop-shadow-[0_40px_80px_rgba(0,0,0,0.6)]"
         >
@@ -233,6 +248,7 @@ export default function Board({ leds, components, onValueChange, onButtonPress, 
               onValueChange={(val) => onValueChange(comp.id, val)}
               onHover={onSensorHover}
               onSwapClick={(id) => setSwappingComponentId(id)}
+              boardScale={boardScale}
             />
           </div>
         ))}

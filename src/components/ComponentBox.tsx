@@ -1,4 +1,4 @@
- import React from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { ComponentInstance } from '../types';
 import { 
@@ -16,9 +16,10 @@ interface ComponentBoxProps {
   onValueChange?: (value: number) => void;
   onHover?: (instance: ComponentInstance | null) => void;
   onSwapClick?: (id: string) => void;
+  boardScale?: number;
 }
 
-export default function ComponentBox({ instance, onValueChange, onHover, onSwapClick }: ComponentBoxProps) {
+export default function ComponentBox({ instance, onValueChange, onHover, onSwapClick, boardScale }: ComponentBoxProps) {
   const isInput = ['light_sensor', 'temp_sensor', 'pir_sensor', 'potentiometer', 'button', 'switch', 'humidity_sensor', 'ultrasonic_sensor', 'red_led', 'yellow_led', 'motor', 'servo', 'stepper_motor'].includes(instance.type);
 
   const getRange = () => {
@@ -269,39 +270,39 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
         return (
           <div className="relative w-full h-full flex flex-col items-center justify-center p-1">
              {/* Main Blue Rectangular Base House */}
-             <div className="relative w-14 h-10 bg-[#2596be] rounded-sm shadow-[0_4px_8px_rgba(0,0,0,0.3)] border border-[#1e7a9c] flex items-end justify-center pb-0.5 overflow-hidden">
+             <div className="relative w-16 h-12 bg-[#2596be] rounded-sm shadow-[0_4px_8px_rgba(0,0,0,0.3)] border border-[#1e7a9c] flex items-end justify-center pb-0.5 overflow-hidden">
                 {/* Metallic Side Clips/Solder tabs */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-3 bg-slate-300 rounded-[1px] border border-slate-400 shadow-sm" />
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-3 bg-slate-300 rounded-[1px] border border-slate-400 shadow-sm" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-3.5 bg-slate-300 rounded-[1px] border border-slate-400 shadow-sm" />
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-3.5 bg-slate-300 rounded-[1px] border border-slate-400 shadow-sm" />
                 
                 {/* PCB Trace effect on base */}
                 <div className="absolute inset-x-1 top-1 h-[2px] bg-[#1e7a9c]/30 rounded-full" />
              </div>
-
+ 
              {/* The Black Potentiometer Body (Tall Cylinder) */}
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[65%] z-20">
                 {/* Main Shaft/Body */}
-                <div className="w-10 h-10 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-950 rounded-lg shadow-2xl border-x border-gray-700 relative overflow-hidden">
+                <div className="w-12 h-12 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-950 rounded-lg shadow-2xl border-x border-gray-700 relative overflow-hidden">
                    {/* Vertical Ridges for texture */}
                    <div className="absolute inset-0 flex justify-between px-1 opacity-20 pointer-events-none">
                       {[1,2,3,4,5].map(i => <div key={i} className="w-[1px] h-full bg-white/20 shadow-sm" />)}
                    </div>
                 </div>
-
+ 
                 {/* The Rotating Knob Cap (Blue Top) */}
                 <motion.div 
                    animate={{ rotate: (instance.value / 1023) * 270 - 135 }}
-                   className="absolute top-0 left-1/2 -translate-x-1/2 -mt-1 w-10 h-10 bg-[#3eb4e4] rounded-full border-2 border-[#2596be] shadow-lg flex items-center justify-center z-30"
+                   className="absolute top-0 left-1/2 -translate-x-1/2 -mt-1 w-12 h-12 bg-[#3eb4e4] rounded-full border-2 border-[#2596be] shadow-lg flex items-center justify-center z-30"
                 >
                    {/* Indicator Notch */}
-                   <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-2.5 bg-black/80 rounded-sm" />
+                   <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-1.5 h-3 bg-black/80 rounded-sm" />
                    {/* Top Surface highlight */}
-                   <div className="w-8 h-8 rounded-full border border-white/10" />
+                   <div className="w-10 h-10 rounded-full border border-white/10" />
                 </motion.div>
              </div>
              
              {/* Base perspective shadow */}
-             <div className="absolute bottom-2 w-16 h-4 bg-black/10 blur-[4px] rounded-full -z-10" />
+             <div className="absolute bottom-2 w-18 h-4 bg-black/10 blur-[4px] rounded-full -z-10" />
           </div>
         );
       case 'motor':
@@ -315,7 +316,7 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
         return (
           <div className="relative w-full h-full flex flex-col items-center justify-center p-2">
              {/* Realistic Motor Metal Housing */}
-             <div className={`relative ${isStepper || isServo ? 'w-14 h-14 rounded-md' : 'w-16 h-12 rounded-lg'} bg-gradient-to-tr from-slate-400 via-slate-200 to-slate-400 shadow-xl border border-slate-500/50 flex items-center justify-center overflow-hidden transition-all duration-500`}>
+             <div className={`relative ${isStepper || isServo ? 'w-16 h-16 rounded-md' : 'w-18 h-14 rounded-lg'} bg-gradient-to-tr from-slate-400 via-slate-200 to-slate-400 shadow-xl border border-slate-500/50 flex items-center justify-center overflow-hidden transition-all duration-500`}>
                 {!(isStepper || isServo) && <div className="absolute top-1 right-2 text-[4px] text-slate-400 font-mono opacity-40">DC 3-6V</div>}
                 {(isStepper || isServo) && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center opacity-10">
@@ -351,34 +352,34 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
                     ease: "linear" 
                   } : { duration: 0.2 })}
                   key={isServo ? 'servo' : `motor-${instance.id}-${duration}`}
-                  className={`relative ${isStepper || isServo ? 'w-18 h-18' : 'w-24 h-24'} flex items-center justify-center`}
+                  className={`relative ${isStepper || isServo ? 'w-22 h-22' : 'w-28 h-28'} flex items-center justify-center`}
                 >
                    {/* Propeller Blades (Yellow) - Only for DC Motor */}
                    {!(isStepper || isServo) ? [0, 90, 180, 270].map(angle => (
                      <div 
                        key={angle} 
-                       className="absolute w-10 h-6 bg-[#facc15] rounded-full border border-[#a16207] shadow-sm transform-origin-center"
+                       className="absolute w-12 h-7 bg-[#facc15] rounded-full border border-[#a16207] shadow-sm transform-origin-center"
                        style={{ 
-                         transform: `rotate(${angle}deg) translateX(12px) skewX(20deg)`,
+                         transform: `rotate(${angle}deg) translateX(14px) skewX(20deg)`,
                          boxShadow: 'inset -2px -2px 4px rgba(0,0,0,0.1)'
                        }}
                      />
                    )) : isStepper ? (
                      /* Stepper Pointer/Hub */
                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="w-14 h-1 bg-slate-800/40 rounded-full absolute" />
-                        <div className="w-1 h-14 bg-slate-800/40 rounded-full absolute" />
-                        <div className="w-8 h-8 bg-slate-700 rounded-full border-2 border-slate-500 shadow-lg" />
-                        <div className="w-1 h-4 bg-red-500 rounded-full absolute -top-4" />
+                        <div className="w-16 h-1 bg-slate-800/40 rounded-full absolute" />
+                        <div className="w-1 h-16 bg-slate-800/40 rounded-full absolute" />
+                        <div className="w-10 h-10 bg-slate-700 rounded-full border-2 border-slate-500 shadow-lg" />
+                        <div className="w-1.5 h-5 bg-red-500 rounded-full absolute -top-5" />
                      </div>
                    ) : (
                      /* Servo Arm (White Horn) */
                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="w-14 h-3 bg-white rounded-full border border-slate-300 shadow-md flex items-center justify-between px-2">
+                        <div className="w-18 h-4 bg-white rounded-full border border-slate-300 shadow-md flex items-center justify-between px-2">
                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-300" />
                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-300" />
                         </div>
-                        <div className="w-5 h-5 bg-white rounded-full border-2 border-slate-400 shadow-md absolute z-20 flex items-center justify-center">
+                        <div className="w-6 h-6 bg-white rounded-full border-2 border-slate-400 shadow-md absolute z-20 flex items-center justify-center">
                            <div className="w-1.5 h-1.5 bg-slate-600 rounded-full" />
                         </div>
                      </div>
@@ -401,12 +402,12 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
       case 'button':
         return (
           <div className="relative w-full h-full flex items-center justify-center">
-             <div className="w-10 h-10 bg-[#1a1a1a]/40 rounded-full blur-[2px] absolute translate-y-1" />
+             <div className="w-12 h-12 bg-[#1a1a1a]/40 rounded-full blur-[2px] absolute translate-y-1" />
              <motion.button
                 onPointerDown={() => onValueChange?.(1)}
                 onPointerUp={() => onValueChange?.(0)}
                 onPointerLeave={() => onValueChange?.(0)}
-                className={`relative z-10 w-10 h-10 rounded-full border-2 transition-all shadow-md flex items-center justify-center ${
+                className={`relative z-10 w-12 h-12 rounded-full border-2 transition-all shadow-md flex items-center justify-center ${
                    instance.value === 1 ? 'bg-orange-500 border-orange-700' : 'bg-blue-600 border-blue-800'
                 }`}
              >
@@ -419,15 +420,15 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
           <div className="relative w-full h-full flex items-center justify-center p-2">
              <div className="absolute inset-0 bg-[#1a1a1a] rounded-lg shadow-inner" />
              <div 
-                className="relative z-10 w-16 h-8 bg-slate-900 rounded-full border-2 border-slate-700 shadow-2xl cursor-pointer overflow-hidden p-1"
+                className="relative z-10 w-20 h-10 bg-slate-900 rounded-full border-2 border-slate-700 shadow-2xl cursor-pointer overflow-hidden p-1"
                 onClick={() => onValueChange?.(instance.value > 0 ? 0 : 1)}
              >
                 <motion.div 
                    animate={{ 
-                     x: instance.value > 0 ? 28 : 0,
+                     x: instance.value > 0 ? 36 : 0,
                      backgroundColor: instance.value > 0 ? '#3b82f6' : '#64748b'
                    }}
-                   className="w-6 h-full rounded-full shadow-lg border border-white/20 flex items-center justify-center"
+                   className="w-8 h-full rounded-full shadow-lg border border-white/20 flex items-center justify-center"
                 >
                    <div className="w-0.5 h-3 bg-white/40 rounded-full" />
                 </motion.div>
@@ -456,7 +457,7 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
         top: `${instance.y}%`,
         x: "-50%",
         y: "-50%",
-        scale: 0.8
+        scale: 0.95 * (boardScale ?? 1)
       }}
       className="absolute z-30 flex flex-col items-center pointer-events-auto transition-shadow group"
     >
