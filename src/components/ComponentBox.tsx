@@ -8,7 +8,8 @@ import {
   Settings2,
   Cpu,
   Zap,
-  Droplets
+  Droplets,
+  Palette
 } from 'lucide-react';
 
 interface ComponentBoxProps {
@@ -20,13 +21,18 @@ interface ComponentBoxProps {
 }
 
 export default function ComponentBox({ instance, onValueChange, onHover, onSwapClick, boardScale }: ComponentBoxProps) {
-  const isInput = ['light_sensor', 'temp_sensor', 'pir_sensor', 'potentiometer', 'button', 'switch', 'humidity_sensor', 'ultrasonic_sensor', 'red_led', 'yellow_led', 'motor', 'servo', 'stepper_motor'].includes(instance.type);
+  const isInput = [
+    'light_sensor', 'color_sensor', 'temp_sensor', 'pir_sensor', 'potentiometer', 
+    'button', 'switch', 'humidity_sensor', 'ultrasonic_sensor', 'red_led', 
+    'yellow_led', 'motor', 'servo', 'stepper_motor'
+  ].includes(instance.type);
 
   const getRange = () => {
     switch(instance.type) {
       case 'temp_sensor': return { min: -10, max: 50, step: 1, unit: '°C' };
       case 'humidity_sensor': return { min: 0, max: 100, step: 1, unit: '%' };
       case 'light_sensor': return { min: 0, max: 1023, step: 1, unit: 'lx' };
+      case 'color_sensor': return { min: 0, max: 5, step: 1, unit: '' };
       case 'potentiometer': return { min: 0, max: 1023, step: 1, unit: '' };
       case 'button':
       case 'switch': return { min: 0, max: 1, step: 1, unit: '' };
@@ -39,11 +45,70 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
     }
   };
 
+  const getDisplayValue = () => {
+    if (instance.type === 'color_sensor') {
+      const colors = [
+        '🔴 אדום',
+        '🟢 ירוק',
+        '🔵 כחול',
+        '🟡 צהוב',
+        '🟠 כתום',
+        '🟣 סגול'
+      ];
+      return colors[instance.value] || '---';
+    }
+    return `${instance.value}${unit}`;
+  };
+
   const { min, max, step, unit } = getRange();
 
   // Render the specific "Sensor Element" based on type
   const renderSensorElement = () => {
     switch (instance.type) {
+      case 'color_sensor': {
+        const colorMap = [
+          '#ef4444', // Red
+          '#22c55e', // Green
+          '#3b82f6', // Blue
+          '#eab308', // Yellow
+          '#f97316', // Orange
+          '#a855f7'  // Purple
+        ];
+        const activeColor = colorMap[instance.value] || '#ef4444';
+        return (
+          <div className="relative w-full h-full flex flex-col items-center justify-center p-0.5 uppercase">
+             {/* Central active glowing color circle */}
+             <div className="relative mb-1">
+                <Palette className="w-5 h-5 text-gray-700 transition-colors" style={{ color: activeColor }} />
+             </div>
+             
+             {/* TCS34725 Style Color Sensor PCB (Purple color PCB is typical for TCS34725) */}
+             <div className="relative z-10 w-15 h-12 bg-purple-950 rounded-lg p-1 shadow-[0_3px_8px_rgba(0,0,0,0.4)] flex items-center justify-center border border-purple-800">
+                <div className="w-full h-full bg-[#111] rounded-[5px] relative overflow-hidden flex flex-col items-center justify-center">
+                   
+                   {/* 4 Corner White LEDs as light source */}
+                   <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-yellow-50 rounded-full shadow-[0_0_4px_#fff]" />
+                   <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-50 rounded-full shadow-[0_0_4px_#fff]" />
+                   <div className="absolute bottom-1 left-1 w-1.5 h-1.5 bg-yellow-50 rounded-full shadow-[0_0_4px_#fff]" />
+                   <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-yellow-50 rounded-full shadow-[0_0_4px_#fff]" />
+                   
+                   {/* Central Photodiode chip with active optical filter color */}
+                   <div className="w-6 h-6 rounded-full border border-slate-600 flex items-center justify-center bg-slate-900 relative">
+                      <motion.div 
+                        animate={{ backgroundColor: activeColor }}
+                        transition={{ duration: 0.3 }}
+                        className="w-3.5 h-3.5 rounded-full shadow-inner" 
+                        style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.5)' }}
+                      />
+                   </div>
+                   
+                </div>
+             </div>
+             
+             <div className="mt-1.5 text-[7px] text-slate-400 font-black tracking-widest">RGB COLOR</div>
+          </div>
+        );
+      }
       case 'lcd_display':
         return (
           <div className="w-full h-full p-1">
@@ -518,7 +583,7 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
                 </div>
                 <div className="flex justify-center -mt-0.5">
                   <span className="text-[11px] font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md shadow-sm font-mono border border-blue-100">
-                    {instance.value}{unit}
+                    {getDisplayValue()}
                   </span>
                 </div>
              </div>

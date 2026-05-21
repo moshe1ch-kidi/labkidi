@@ -7,6 +7,7 @@ import {
   X, 
   Sun, 
   Thermometer, 
+  Palette,
   Droplets, 
   RotateCw, 
   Zap, 
@@ -15,6 +16,15 @@ import {
 } from 'lucide-react';
 
 const AVAILABLE_COMPONENTS = [
+  {
+    type: 'color_sensor' as const,
+    name: 'חיישן זיהוי צבע',
+    enName: 'Color Sensor',
+    category: 'sensors' as const,
+    icon: Palette,
+    color: '#ec4899',
+    description: 'מזהה צבעים שונים בסביבה (אדום, ירוק, כחול, צהוב ועוד)',
+  },
   {
     type: 'light_sensor' as const,
     name: 'חיישן אור (LDR)',

@@ -13,6 +13,7 @@ import PotentiometerIcon from '@icons/Potentiometer-1.png';
 import PushIcon from '@icons/push-1.png';
 import UltrasonicIcon from '@icons/ultrasonic-1.png';
 import LDRIcon from '@icons/ldr.png';
+import ColorSensorIcon from '@icons/colorsensor.png';
 import VarIcon from '@icons/var.png';
 import MathIcon from '@icons/math.png';
 import OutputIcon from '@icons/output-1.png';
@@ -152,6 +153,7 @@ export default forwardRef<BlocklyEditorRef, BlocklyEditorProps>(({ onCodeChange,
         ultrasonic: UltrasonicIcon, 
         potentiometer: PotentiometerIcon, 
         ldr: LDRIcon, 
+        colorSensor: ColorSensorIcon,
         push: PushIcon,
         motor: MotorIcon,
         servo: ServoIcon,
