@@ -6,6 +6,7 @@ import { ComponentInstance, ComponentType } from './types';
 import Board from './components/Board';
 import BlocklyEditor, { BlocklyEditorRef } from './components/BlocklyEditor';
 import smartGateBarrierImg from './assets/images/smart_gate_barrier_1779353380715.png';
+import colorSorterImg from './assets/images/color_sorter_img_1779355927492.png';
 
 export interface LearningTask {
   id: number;
@@ -316,6 +317,50 @@ const LEARNING_TASKS: LearningTask[] = [
       
       return { success: true, feedback: 'מדהים ומבריק! זרוע המחסום החשמלי הווירטואלי שלכם עולה ויורדת ללא הפסקה ובדיוק מושלם בין 0 ל-180 מעלות! אתם פשוט מהנדסי רובוטיקה מומחים! 🚧⚙️🦾🤖🏆' };
     }
+  },
+  {
+    id: 8,
+    title: '🌈 מיון צבעים אוטומטי (משימה 8)',
+    description: 'בשיעור זה נחקור את חיישן זיהוי הצבעים (RGB Color Sensor). נלמד כיצד לזהות את צבע הפריטים שעוברים על פני החיישן ולהדליק בהתאם נורות לד מתאימות!',
+    difficulty: 'מומחה קוד וצבע 🌈',
+    emoji: '🌈',
+    objective: 'לתכנת את המערכת כך שאם חיישן הצבע מזהה אדום (ערך 0), נורת הלד האדומה תידלק והצהובה תכבה. וכאשר החיישן מזהה צהוב (ערך 3), נורת הלד הצהובה תידלק והאדומה תכבה!',
+    hints: [
+      'נעטוף הכל בלבנת "לעולמים" (forever) כדי לבצע בדיקה קבועה של הצבע ברקע.',
+      'נשתמש בלבנת תנאי "אם... אחרת" (if... else if) לבדיקה לוגית.',
+      'נבדוק בתוך התנאי הראשון אם "Color Sensor" שווה ל-0 (אדום), ונדליק את הלד האדום (Red Led to 1) ונכבה את הלד הצהוב (Yellow Led to 0).',
+      'נבדוק בתנאי השני אם "Color Sensor" שווה ל-3 (צהוב), ונדליק את הלד הצהוב (Yellow Led to 1) ונכבה את האדום (Red Led to 0)!'
+    ],
+    image: colorSorterImg,
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasColorSensor = cleaned.includes("readColorSensor(") || cleaned.includes("readColorSensor");
+      const hasIf = cleaned.includes('if(') || cleaned.includes('if ');
+      const hasRedOn = cleaned.includes("setLedState('red',1)") || cleaned.includes('setLedState("red",1)');
+      const hasYellowOn = cleaned.includes("setLedState('yellow',1)") || cleaned.includes('setLedState("yellow",1)');
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasColorSensor) {
+        return { success: false, feedback: 'שכחתם לקרוא את הערך מחיישן הצבע! גררו את לבנת "Color Sensor (RGB)" למשטח העבודה.' };
+      }
+      if (!hasIf) {
+        return { success: false, feedback: 'השתמשו בלבנת תנאי "אם... אחרת" (if... else if) מקטגוריית לוגיקה כדי לבדוק איזה צבע זוהה!' };
+      }
+      if (!hasRedOn) {
+        return { success: false, feedback: 'ודאו שאתם מדליקים (ON) את נורת הלד האדומה (Red Led) כאשר החיישן מזהה את הצבע האדום (ערך 0)!' };
+      }
+      if (!hasYellowOn) {
+        return { success: false, feedback: 'ודאו שאתם מדליקים (ON) את נורת הלד הצהובה (Yellow Led) כאשר החיישן מזהה את הצבע הצהוב (ערך 3)!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שהמערכת תמשיך למיין פריטים בשידור חי וללא הפסקה, ודאו שעטפתם הכול בתוך לולאת forever!' };
+      }
+      
+      return { success: true, feedback: 'מדהים ביותר! בניתם קוד מיון מושלם וחכם בעזרת חיישן הצבע החדש. הלדים נדלקים בתיאום מושלם לפי זיהוי הצבע! אתם גאונים! 🌈🤖🔮🏆' };
+    }
   }
 ];
 
@@ -436,6 +481,10 @@ export default function App() {
     let value = 0;
     
     switch (newType) {
+      case 'color_sensor':
+        name = 'Color Sensor';
+        value = 0; // Default: Red
+        break;
       case 'humidity_sensor':
         name = 'Humidity Sensor';
         value = 45;
@@ -548,6 +597,10 @@ export default function App() {
       },
       ultrasonicRead: (triggerPort: string, echoPort: string) => {
         const comp = componentsRef.current.find(c => c.type === 'ultrasonic_sensor');
+        return comp ? comp.value : 0;
+      },
+      readColorSensor: (port: string) => {
+        const comp = componentsRef.current.find(c => c.type === 'color_sensor');
         return comp ? comp.value : 0;
       },
       temperature: () => {

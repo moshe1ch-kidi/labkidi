@@ -1,6 +1,7 @@
 export type ComponentType = 
   | 'motor' 
   | 'light_sensor' 
+  | 'color_sensor'
   | 'button' 
   | 'switch'
   | 'temp_sensor' 
