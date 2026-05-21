@@ -12,7 +12,7 @@ export const COLORS = {
 };
 
 // Define custom blocks for Micro:bit
-export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, push: string, motor: string, servo: string, led: string, buzzer: string, forever: string, wait: string, repeat: string }) => {
+export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, colorSensor: string, pirSensor: string, push: string, motor: string, servo: string, led: string, buzzer: string, forever: string, wait: string, repeat: string }) => {
   // Buzzer / Play Tone
   Blockly.Blocks['microbit_buzzer'] = {
     init: function() {
@@ -423,6 +423,42 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
     return [`microbit.analog_read('P1')`, PythonOrder.FUNCTION_CALL];
   };
 
+  // Color Sensor
+  Blockly.Blocks['microbit_color_sensor'] = {
+    init: function() {
+      this.appendDummyInput()
+          .appendField('Color Sensor (RGB)')
+          .appendField(new Blockly.FieldImage(icons.colorSensor, 30, 30, 'color_sensor'));
+      this.setOutput(true, 'Number');
+      this.setColour(COLORS.SENSOR);
+    }
+  };
+  javascriptGenerator.forBlock['microbit_color_sensor'] = function() {
+    return [`microbit.readColorSensor('P3')`, Order.FUNCTION_CALL];
+  };
+
+  pythonGenerator.forBlock['microbit_color_sensor'] = function() {
+    return [`microbit.read_color_sensor('P3')`, PythonOrder.FUNCTION_CALL];
+  };
+
+  // PIR Motion Sensor
+  Blockly.Blocks['microbit_pir_sensor'] = {
+    init: function() {
+      this.appendDummyInput()
+          .appendField('PIR Motion Sensor')
+          .appendField(new Blockly.FieldImage(icons.pirSensor, 30, 30, 'pir_sensor'));
+      this.setOutput(true, 'Number');
+      this.setColour(COLORS.SENSOR);
+    }
+  };
+  javascriptGenerator.forBlock['microbit_pir_sensor'] = function() {
+    return [`microbit.readPIRSensor('P2')`, Order.FUNCTION_CALL];
+  };
+
+  pythonGenerator.forBlock['microbit_pir_sensor'] = function() {
+    return [`microbit.read_pir_sensor('P2')`, PythonOrder.FUNCTION_CALL];
+  };
+
   // Push Button
   Blockly.Blocks['microbit_push_button'] = {
     init: function() {
@@ -650,13 +686,12 @@ export const toolbox = {
       cssConfig: { row: 'cat-bg-sensor', icon: 'cat-icon-sensor', container: 'cat-sensor' },
       contents: [
         { kind: 'block', type: 'microbit_analog_read' },
-        { kind: 'block', type: 'microbit_temperature' },
-        { kind: 'block', type: 'microbit_light_level' },
-        { kind: 'block', type: 'microbit_acceleration' },
         { kind: 'block', type: 'microbit_moisture_sensor' },
         { kind: 'block', type: 'microbit_ultrasonic_sensor' },
         { kind: 'block', type: 'microbit_potentiometer' },
         { kind: 'block', type: 'microbit_light_sensor' },
+        { kind: 'block', type: 'microbit_color_sensor' },
+        { kind: 'block', type: 'microbit_pir_sensor' },
         { kind: 'block', type: 'microbit_push_button' },
       ],
     },
