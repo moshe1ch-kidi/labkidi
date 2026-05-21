@@ -1,4 +1,4 @@
- import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
+import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code, Trophy, Sparkles, Lightbulb, CheckCircle2, ChevronRight, ChevronLeft, Award } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
@@ -10,7 +10,7 @@ export interface LearningTask {
   id: number;
   title: string;
   description: string;
-  difficulty: 'קל' | 'בינוני' | 'קשה';
+  difficulty: string;
   emoji: string;
   objective: string;
   hints: string[];
@@ -20,17 +20,17 @@ export interface LearningTask {
 const LEARNING_TASKS: LearningTask[] = [
   {
     id: 1,
-    title: 'הבהוב לדים (משימה 1 🚨)',
-    description: 'גרמו לנורת ה-LED האדומה להידלק ולהכבות שוב ושוב כמו פנס חירום!',
-    difficulty: 'קל',
+    title: '🚨 חגיגת אורות אדומים (משימה 1)',
+    description: 'בואו נגרום לנורה האדומה להבהב כמו צ\'קלקה של רכב כיבוי אש או פנס קסמים!',
+    difficulty: 'קל ומתוק 🌟',
     emoji: '🚨',
-    objective: 'להפעיל לולאה נצחית (forever) שבה הלד האדום נדלק למשך שנייה אחת, ואז נכבה למשך שנייה אחת.',
+    objective: 'לגרום לנורה האדומה להידלק לשנייה אחת, לכבות לשנייה אחת, וחוזר חלילה - לנצח!',
     hints: [
-      'גררו את לבנת forever מסדרת הבקרה של המיקרוביט.',
-      'הוסיפו בתוכה לבנת "Red Led ON" (מקטגוריית Output/פלט).',
-      'הוסיפו מיד אחריה לבנת המתנה של שנייה אחת (Wait 1 Sec מהבקרה).',
-      'כעת הוסיפו לבנת "Red Led OFF".',
-      'חובה להוסיף לבנת המתנה נוספת (Wait 1 Sec) בסוף כדי שהנורה תישאר כבויה לרגע לפני שהלולאה מתחילה שוב!'
+      'קודם כל, ניקח את לבנת "לעולמים" (forever) מהספרייה השמחה שלנו.',
+      'נכניס לתוכה את הלבנה "הפעל לד אדום" (Red Led ON) כדי להעיר אותה.',
+      'נבקש מהמיקרוביט לחכות קצת בעזרת לבנת המתנה (Wait 1 Sec). שהדברים לא ירוצו מהר מדי!',
+      'עכשיו נכבה את הלד בעזרת "כבה לד אדום" (Red Led OFF).',
+      'אל תשכחו: נוסיף עוד המתנה קטנה של שנייה בסוף כדי שהנורה תספיק "לנוח" לפני שהיא נדלקת שוב!'
     ],
     testCode: (jsCode: string) => {
       const cleaned = jsCode.replace(/\s+/g, '');
@@ -42,36 +42,36 @@ const LEARNING_TASKS: LearningTask[] = [
         return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
       }
       if (!hasRedOn) {
-        return { success: false, feedback: 'שכחתם להדליק את הלד האדום (Red Led ON)!' };
+         return { success: false, feedback: 'אויש! שכחתם להדליק את הלד האדום (Red Led ON)!' };
       }
       if (!hasRedOff) {
-        return { success: false, feedback: 'הדלקתם את הלד, אבל שכחתם לכבות אותו (Red Led OFF)!' };
+         return { success: false, feedback: 'הלד דולק יפה, אבל שכחנו לכבות אותו (Red Led OFF) כדי שהוא יוכל להבהב!' };
       }
       if (!hasWait) {
-        return { success: false, feedback: 'הלד נדלק ונכבה מהר מדי! הוסיפו לבנות המתנה (Wait 1 Sec) לאחר כל שינוי מצב.' };
+         return { success: false, feedback: 'וואו, זה רץ מהר מדי! הוסיפו לבנות המתנה (Wait 1 Sec) כדי שהעיניים יספיקו לראות את האור נדלק ונכבה.' };
       }
       
       const waitCount = (jsCode.match(/setTimeout|Promise/g) || []).length;
       if (waitCount < 2) {
-        return { success: false, feedback: 'טיפ קטן: כדאי להוסיף שתי לבנות המתנה של שנייה (אחת אחרי ההדלקה ואחת אחרי הכיבוי) כדי שהעיניים יספיקו לראות את ההבהוב!' };
+         return { success: false, feedback: 'טיפ של אלופים: הוסיפו שתי לבנות המתנה (אחת אחרי ההדלקה ואחת אחרי הכיבוי) כדי לקבל קצב הבהוב מושלם!' };
       }
 
-      return { success: true, feedback: 'כל הכבוד! הקוד שלכם מושלם! הלד משלים הבהוב שלם בהצלחה.' };
+      return { success: true, feedback: 'כל הכבוד, אתם פשוט אלופי קוד! הלד האדום מהבהב בקצב משגע! 🎉🎈' };
     }
   },
   {
     id: 2,
-    title: 'הבהוב ממתג (משימה 2 🚥)',
-    description: 'גרמו לנורת ה-LED האדומה והצהובה להתחלף ביניהן בקצביות (כמו רמזור ממתג)!',
-    difficulty: 'בינוני',
+    title: '🚥 רמזור בלגן (משימה 2)',
+    description: 'המשטרה צריכה את עזרתכם! בואו נתקן את הרמזור ונלמד את נורות הלד האדומה והצהובה לרקוד ביחד!',
+    difficulty: 'בלש קוד 🕵️‍♂️',
     emoji: '🚥',
-    objective: 'ליצור הבהוב ממתג: כשהלד האדום דולק, הלד הצהוב כבוי - וכשהלד האדום נכבה, הלד הצהוב נדלק!',
+    objective: 'ליצור משחק אורות: כשהאדום דולק - הצהוב כבוי, וכשהאדום נכבה - הצהוב נדלק במהירות!',
     hints: [
-      'התחילו בתוך לבנת forever.',
-      'שלב א\': הדליקו את האדום (Red Led ON) וכבו את הצהוב (Yellow Led OFF).',
-      'הוסיפו המתנה של שנייה אחת (Wait 1 Sec).',
-      'שלב ב\': כבו את האדום (Red Led OFF) והדליקו את הצהוב (Yellow Led ON).',
-      'הוסיפו המתנה נוספת של שנייה אחת (Wait 1 Sec) בסוף הלולאה כדי לאפשר הצגת המצב השני!'
+      'נתחיל עם הלבנה הסופר-חזקה "לעולמים" (forever) שתשמור על הקצב המדויק.',
+      'שלב ראשון: נדליק את האדום (Red Led ON) ונוודא שהצהוב כבוי (Yellow Led OFF).',
+      'ניתן להם לחכות שנייה אחת (Wait 1 Sec).',
+      'שלב שני: נהפוך את התפקידים! נכבה את האדום (Red Led OFF) ונדליק את הצהוב (Yellow Led ON).',
+      'נחכה עוד שנייה שלמה (Wait 1 Sec) בסוף כדי שהרמזור שלנו יעבוד בקצב קבוע של החלפות אש.'
     ],
     testCode: (jsCode: string) => {
       const cleaned = jsCode.replace(/\s+/g, '');
@@ -85,35 +85,35 @@ const LEARNING_TASKS: LearningTask[] = [
         return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
       }
       if (!hasRedOn || !hasRedOff) {
-        return { success: false, feedback: 'משהו חסר עם הלד האדום: ודאו שיש לכם קוד המפעיל (ON) ומכבה (OFF) אותו בכל מחזור!' };
+         return { success: false, feedback: 'הלד האדום קצת מבולבל! ודאו שאתם גם מדליקים (ON) וגם מכבים (OFF) אותו.' };
       }
       if (!hasYellowOn || !hasYellowOff) {
-        return { success: false, feedback: 'משהו חסר עם הלד הצהוב: ודאו שיש לכם קוד המפעיל (ON) ומכבה (OFF) אותו בכל מחזור!' };
+         return { success: false, feedback: 'הלד הצהוב רוצה להשתתף בחגיגה! ודאו שאתם גם מדליקים (ON) וגם מכבים (OFF) אותו בקוד.' };
       }
       if (!hasWait) {
-        return { success: false, feedback: 'הלדים יתחלפו מהר מדי מבלי שתוכלו להבחין בהם! הוסיפו לבנות המתנה (Wait 1 Sec) לאחר כל שינוי מצב.' };
+         return { success: false, feedback: 'האורות מתחלפים כל כך מהר שהם נראים כמו אור אחד! הוסיפו לבנות המתנה (Wait 1 Sec) של שנייה אחרי כל צעד.' };
       }
       
       const waitCount = (jsCode.match(/setTimeout|Promise/g) || []).length;
       if (waitCount < 2) {
-        return { success: false, feedback: 'הוסיפו לפחות שתי לבנות המתנה (אחת לכל מצב) כדי שההבהוב הדו-צבעי יראה בבירור ממתג!' };
+         return { success: false, feedback: 'כמעט שם! הוסיפו לפחות שתי לבנות המתנה (אחת לכל מצב) כדי שהריקוד של הרמזור יהיה ברור ויפעל בקצב נכון.' };
       }
 
-      return { success: true, feedback: 'מדהים ביותר! פתרתם את האתגר של הבהוב ממתג בין האדום לצהוב כמו מקצוענים! 🏆' };
+      return { success: true, feedback: 'וואו, מדהים! תיקנתם את הרמזור והצלתם את הצומת! האורות רוקדים בצורה מושלמת כל הכבוד! 🚥🏆⚡' };
     }
   },
   {
     id: 3,
-    title: 'לחצן מפעיל לד צהוב (משימה 3 🔵)',
-    description: 'השתמשו בלחצן הכחול שעל הלוח (Push Button) כדי להדליק את נורת ה-LED הצהובה!',
-    difficulty: 'קל',
+    title: '🔵 לחצן הקסם הכחול (משימה 3)',
+    description: 'קליק קלאק! בואו נתחבר לכפתור הכחול הפיזי שעל הלוח ונרים מפסק תאורה קסום!',
+    difficulty: 'קל ומרתק ✨',
     emoji: '🔵',
-    objective: 'ליצור קוד המוודא: מתי שלוחצים על הלחצן הכחול (Push Button) שעל גבי הלוח, נורת ה-LED הצהובה נדלקת!',
+    objective: 'ברגע שנניח את האצבע ונלחץ על הכפתור הכחול (Push Button), האור הצהוב החם יידלק מיד!',
     hints: [
-      'גררו לבנת "forever" לעולמים כדי לבדוק את הלחצן באופן קבוע.',
-      'הוסיפו לבנת תנאי "if" (אם) מתוך קטגוריית "Logic" (לוגיקה).',
-      'בדקו האם הערך של הלבנה "Push Button" (מקטגוריית Sensors) שווה ל-1.',
-      'בתוך גוף התנאי, הכניסו את הלבנה "Yellow Led ON" (מקטגוריית Output) כדי להדליק את הלד הצהוב!'
+      'נשתמש בלולאת "לעולמים" (forever) כדי שהמיקרוביט יקשיב לאצבע שלנו כל הזמן.',
+      'נגרור לבנת "אם" (if) מיוחדת מקטגוריית "לוגיקה" - היא יודעת לשאול שאלות חשובות!',
+      'נבדוק האם הלבנה "Push Button" (מקטגוריית החיישנים) שווה בדיוק ל-1 (שזה אומר שהכפתור לחוץ!).',
+      'אם התנאי מתקיים והכפתור באמת לחוץ - נפעיל את הלד הצהוב (Yellow Led ON) למעלה שמחכה לנו!'
     ],
     testCode: (jsCode: string) => {
       const cleaned = jsCode.replace(/\s+/g, '');
@@ -126,33 +126,33 @@ const LEARNING_TASKS: LearningTask[] = [
         return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
       }
       if (!hasPushButton) {
-        return { success: false, feedback: 'שכחתם להשתמש בלבנת הלחצן הכחול (Push Button) או לקרוא מפין P8!' };
+         return { success: false, feedback: 'אופס! שכחתם להקשיב ללחצן הכחול (Push Button) שלנו. גררו אותו לתוך קוד הבדיקה.' };
       }
       if (!hasYellowOn) {
-        return { success: false, feedback: 'שכחתם להדליק את הלד הצהוב (Yellow Led ON)!' };
+         return { success: false, feedback: 'הכפתור לחוץ אבל נורת הלד הצהובה לא נדלקת! ודאו שיש לכם לבנת Yellow Led ON בתוך התנאי.' };
       }
       if (!hasIf) {
-        return { success: false, feedback: 'השתמשו בלבנת תנאי "if" מתוך קטגוריית הלוגיקה כדי לבדוק את מצב הלחצן!' };
+         return { success: false, feedback: 'צריך לשאול שאלה: האם הכפתור לחוץ? השתמשו בלבנת "אם" (if) מקטגוריית לוגיקה!' };
       }
       if (!hasLoop) {
-        return { success: false, feedback: 'כדי שהמיקרוביט יבדוק את מצב הלחצן כל הזמן, עליכם לעטוף את התנאי בתוך לולאת forever!' };
+         return { success: false, feedback: 'כדי שהמיקרוביט יוכל לגלות את הלחיצה שלכם בכל פעם שתלחצו, עטפו את הכל בתוך לולאת forever!' };
       }
       
-      return { success: true, feedback: 'מדהים ביותר! יצרתם קוד מעולה שבודק את הלחצן הכחול על הלוח ומדליק את הלד הצהוב כשהוא לחוץ! 🏆' };
+      return { success: true, feedback: 'יששש! הצלחה מטורפת! בניתם מפסק חכם שמדליק אור צהוב חם ברגע שלוחצים על הלחצן הכחול! 💙🎈🌟' };
     }
   },
   {
     id: 4,
-    title: 'עמעם לדים (משימה 4 🎚️)',
-    description: 'שלטו בעוצמת האור של ה-LED באמצעות סיבוב חוגת הפוטנציומטר (עמעם)!',
-    difficulty: 'קשה',
+    title: '🎚️ עמעם האורות המדליק (משימה 4)',
+    description: 'כמו באולם קולנוע! הפכו את הבורר הסיבובי (הפוטנציומטר) לעמעם חכם שקובע בדיוק כמה חזק הלד יאיר!',
+    difficulty: 'גיבור קוד על 👑',
     emoji: '🎚️',
-    objective: 'ליצור קוד שלוקח את הערך הרציף של הפוטנציומטר (0 עד 1023) וכותב אותו ישירות כעוצמת פלט אנלוגית ללד (פין P4 או P5)!',
+    objective: 'ליצור קוד שלוקח את הסיבוב של הבורר (0 עד 1023) ושולח אותו ישירות לעוצמת הלד כדי להחליש או לחזק את האור בהתאמה!',
     hints: [
-      'הוסיפו לבנת "forever" לעולמים כדי לעדכן את עוצמת הלד בכל רגע.',
-      'השתמשו בלבנת "Analog Write Pin" (מקטגוריית Output/פלט), ובחרו בפין P4 (הלד האדום) או פין P5 (הלד הצהוב).',
-      'חברו לכניסת הערך (To) את הלבנה של ה-"Potentiometer" (מקטגוריית Sensors)!',
-      'כשתסובבו את חוגת הפוטנציומטר על גבי המודול השמאלי, תראו את עוצמת ה-LED משתנה בהתאמה מדויקת.'
+      'נזדקק ללבנת "לעולמים" (forever) כדי לעדכן את עוצמת האור בכל פעם שמסובבים את החוגה.',
+      'נשתמש בלבנה המעולה "Analog Write Pin" (מקטגוריית Output) - היא יכולה לשלוח עוצמות רכות ולא רק הדלקה/כיבוי! נכוון את הפין שלה ללד שלנו (P4 לאדום או P5 לצהוב).',
+      'למקום של הערך (To), נחבר את הלבנה העגולה "Potentiometer" (חיישן P3) מקטגוריית החיישנים.',
+      'תפעילו את הסימולטור, סובבו את החוגה השמאלית בחצי עיגול וצפו בקסם: האור נחלש ומתחזק בהתאם ליד שלכם!'
     ],
     testCode: (jsCode: string) => {
       const cleaned = jsCode.replace(/\s+/g, '');
@@ -164,16 +164,16 @@ const LEARNING_TASKS: LearningTask[] = [
         return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
       }
       if (!hasAnalogWrite) {
-        return { success: false, feedback: 'שכחתם להשתמש בלבנת כתיבה אנלוגית (Analog Write Pin) לפינים P4 או P5 (הלדים)!' };
+         return { success: false, feedback: 'שכחתם להשתמש בלבנת כתיבה אנלוגית (Analog Write Pin) לפין P4 או P5 (הלדים), שמאפשרת עוצמות אור משתנות!' };
       }
       if (!hasPot) {
-        return { success: false, feedback: 'שכחתם לקרוא את הערך של הלבנה Potentiometer (פין P3) כדי לשלוט בעוצמת הלד!' };
+         return { success: false, feedback: 'שכחתם לקרוא את המצב של ה-Potentiometer (פין P3) כדי לשמוע כמה סובבנו את החוגה!' };
       }
       if (!hasLoop) {
-        return { success: false, feedback: 'כדי שהעמעום יעבוד ברציפות, הכניסו את כל הלבנים שלכם בתוך לבנת forever!' };
+         return { success: false, feedback: 'כדי שהעמעום יעבוד כל הזמן בכיף, ודאו שכל הלבנות שלכם נמצאות בתוך המלבן של forever!' };
       }
       
-      return { success: true, feedback: 'פשוט נפלא! הצלחתם ליצור עמעם (Dimmer) מושלם המקשר בין סיבוב הפוטנציומטר לעוצמת הזוהר של הלד! 🏆🌟' };
+      return { success: true, feedback: 'פשוט וואו! לקחתם שליטה מלאה על עוצמת האור ובניתם עמעם תאורה מושלם כמו בבית חכם אמיתי! גאים בכם! 🏆🌟😎' };
     }
   }
 ];
@@ -529,19 +529,19 @@ export default function App() {
       </header>
 
       <main className="flex-1 flex overflow-hidden">
-         <section className={`${isEditorExpanded ? 'w-[70%]' : 'w-[40%]'} h-full flex flex-col bg-white border-r-4 border-[#e2e8f0] z-40 transition-all duration-300`}>
-          <div className="h-16 border-b-4 border-[#f1f5f9] flex items-center justify-between px-8 shrink-0 bg-[#f8fafc]">
-             <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full bg-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-                <span className="text-sm font-black text-[#1e293b] uppercase tracking-wider">Workspace</span>
+         <section className={`${isEditorExpanded ? 'w-[75%]' : 'w-[45%] lg:w-[42%] xl:w-[40%]'} h-full flex flex-col bg-white border-r-4 border-[#e2e8f0] z-40 transition-all duration-300`}>
+          <div className="h-16 border-b-4 border-[#f1f5f9] flex items-center justify-between px-3 sm:px-6 md:px-8 shrink-0 bg-[#f8fafc]">
+             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <div className="w-4 h-4 rounded-full bg-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.5)] shrink-0" />
+                <span className="hidden sm:inline text-xs sm:text-sm font-black text-[#1e293b] uppercase tracking-wider">סביבת העבודה</span>
              </div>
-             <div className="flex gap-2.5 items-center">
+             <div className="flex gap-1.5 sm:gap-2.5 items-center shrink-0">
                 {/* RUN / STOP Button container with a unique animated speech bubble */}
-                <div className="relative flex flex-col items-center mr-1">
+                <div className="relative flex flex-col items-center mr-0.5 sm:mr-1 group">
                    {/* Speech bubble */}
-                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
-                     <div className={`bg-gradient-to-r ${isRunning ? 'from-rose-500 to-red-600 shadow-[0_4px_10px_rgba(239,68,68,0.3)]' : 'from-emerald-500 to-green-600 shadow-[0_4px_10px_rgba(16,185,129,0.3)]'} text-white text-[12px] font-black py-1.5 px-3 rounded-2xl border-2 border-white flex items-center gap-1 whitespace-nowrap animate-bounce`}>
-                       <span>{isRunning ? 'STOP' : 'RUN'}</span>
+                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                     <div className={`bg-gradient-to-r ${isRunning ? 'from-rose-500 to-red-600 shadow-[0_4px_10px_rgba(239,68,68,0.3)]' : 'from-emerald-500 to-green-600 shadow-[0_4px_10px_rgba(16,185,129,0.3)]'} text-white text-[11px] sm:text-[12px] font-black py-1.5 px-3 rounded-2xl border-2 border-white flex items-center gap-1 whitespace-nowrap animate-bounce`}>
+                       <span>{isRunning ? 'עצור' : 'הפעל'}</span>
                        <span>{isRunning ? '🛑' : '🚩'}</span>
                      </div>
                      <div className={`w-3 h-3 ${isRunning ? 'bg-red-600' : 'bg-green-600'} rotate-45 -mt-1.5 border-r-2 border-b-2 border-white`} />
@@ -553,20 +553,20 @@ export default function App() {
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={stopSimulation}
-                       className="w-11 h-11 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#991b1b] transition-all cursor-pointer"
+                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#991b1b] transition-all cursor-pointer"
                        title="עצור פרויקט"
                      >
-                       <Square className="w-5 h-5 fill-current" />
+                       <Square className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
                      </motion.button>
                    ) : (
                      <motion.button
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={runSimulation}
-                       className="w-11 h-11 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#16a34a] transition-all cursor-pointer"
+                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#16a34a] transition-all cursor-pointer"
                        title="הפעל פרויקט"
                      >
-                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
                          <path d="M6 3v18h2v-7h10l-2-5 2-5H6z"/>
                        </svg>
                      </motion.button>
@@ -574,26 +574,26 @@ export default function App() {
                 </div>
 
                 {/* Save and Load container with a beautiful speech bubble above */}
-                <div className="relative flex flex-col items-center mr-1">
+                <div className="relative flex flex-col items-center mr-0.5 sm:mr-1 group">
                    {/* Speech bubble */}
-                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
-                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(37,99,235,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
+                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                     <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] sm:text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(37,99,235,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
                        <span>שמירה וטעינה</span>
                        <span className="text-sm">✨</span>
                      </div>
                      <div className="w-3 h-3 bg-indigo-600 rotate-45 -mt-1.5 border-r-2 border-b-2 border-white" />
                    </div>
 
-                   <div className="flex gap-2">
+                   <div className="flex gap-1 sm:gap-2">
                      {/* Save button */}
                      <motion.button
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={handleSaveProject}
-                       className="w-11 h-11 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#1d4ed8] transition-all cursor-pointer"
+                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#1d4ed8] transition-all cursor-pointer"
                        title="שמור פרויקט"
                      >
-                       <Save className="w-5 h-5 stroke-[2.5]" />
+                       <Save className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                      </motion.button>
 
                      {/* Load button */}
@@ -601,58 +601,58 @@ export default function App() {
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={handleLoadProjectClick}
-                       className="w-11 h-11 bg-amber-500 hover:bg-amber-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#b45309] transition-all cursor-pointer"
+                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-amber-500 hover:bg-amber-600 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#b45309] transition-all cursor-pointer"
                        title="טען פרויקט"
                      >
-                       <FolderOpen className="w-5 h-5 stroke-[2.5]" />
+                       <FolderOpen className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                      </motion.button>
                    </div>
                 </div>
 
                 {/* Python Code viewer container with speech bubble - UPDATED */}
-                <div className="relative flex flex-col items-center mr-1">
+                <div className="relative flex flex-col items-center mr-0.5 sm:mr-1 group">
                    {/* Speech bubble */}
-                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
-                     <div className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(139,92,246,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
+                   <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                     <div className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-[11px] sm:text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(139,92,246,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
                        <span>קוד פייתון</span>
                        <span className="text-sm">🐍</span>
                      </div>
                      <div className="w-3 h-3 bg-fuchsia-600 rotate-45 -mt-1.5 border-r-2 border-b-2 border-white" />
                    </div>
 
-                   <div className="flex gap-2">
+                   <div className="flex gap-1 sm:gap-2">
                      <motion.button
                        whileHover={{ scale: 1.1, translateY: -2 }}
                        whileTap={{ scale: 0.9 }}
                        onClick={handleShowPythonCode}
-                       className="w-11 h-11 bg-violet-600 hover:bg-violet-700 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#5b21b6] transition-all cursor-pointer"
+                       className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-violet-600 hover:bg-violet-700 text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#5b21b6] transition-all cursor-pointer"
                        title="הצג קוד פייתון"
                      >
-                       <Code className="w-5 h-5 stroke-[2.5]" />
+                       <Code className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                      </motion.button>
                    </div>
                 </div>
 
                  {/* Learning Tasks container with speech bubble */}
-                 <div className="relative flex flex-col items-center mr-1">
+                 <div className="relative flex flex-col items-center mr-0.5 sm:mr-1 group">
                     {/* Speech bubble */}
-                    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50">
-                      <div className="bg-gradient-to-r from-[#ff9f1c] to-amber-500 text-white text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(245,158,11,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
+                    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 flex flex-col items-center select-none pointer-events-none z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="bg-gradient-to-r from-[#ff9f1c] to-amber-500 text-white text-[11px] sm:text-[12px] font-black py-1.5 px-3 rounded-2xl shadow-[0_4px_10px_rgba(245,158,11,0.3)] border-2 border-white flex items-center gap-1 whitespace-nowrap">
                         <span>כרטיסיות משימה</span>
                         <span className="text-sm">🏆</span>
                       </div>
                       <div className="w-3 h-3 bg-amber-500 rotate-45 -mt-1.5 border-r-2 border-b-2 border-white" />
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 sm:gap-2">
                       <motion.button
                         whileHover={{ scale: 1.1, translateY: -2 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsTaskPanelOpen(true)}
-                        className="w-11 h-11 bg-[#ff9f1c] hover:bg-[#ff8f00] text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#d97706] transition-all cursor-pointer relative"
+                        className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 bg-[#ff9f1c] hover:bg-[#ff8f00] text-white rounded-full flex items-center justify-center border-2 border-white shadow-[0_4px_0_#d97706] transition-all cursor-pointer relative"
                         title="כרטיסיות משימה"
                       >
-                        <Trophy className="w-5 h-5 stroke-[2.5] text-white" />
+                        <Trophy className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] text-white" />
                         {completedTasks.length < LEARNING_TASKS.length && (
                           <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -671,23 +671,23 @@ export default function App() {
                   className="hidden" 
                 />
 
-                <div className="h-6 w-[2px] bg-slate-200 mx-1" />
+                <div className="h-6 w-[2px] bg-slate-200 mx-0.5 sm:mx-1 shrink-0" />
 
                 <button 
                   onClick={() => setIsEditorExpanded(!isEditorExpanded)}
-                  className="p-3 bg-[#e2e8f0] hover:bg-slate-300 rounded-2xl text-[#1e293b] transition-all duration-300 cursor-pointer"
+                  className="p-2 sm:p-3 bg-[#e2e8f0] hover:bg-slate-300 rounded-2xl text-[#1e293b] transition-all duration-300 cursor-pointer shrink-0"
                   title={isEditorExpanded ? 'Collapse Editor' : 'Expand Editor'}
                 >
-                  {isEditorExpanded ? <Minimize2 className="w-8 h-8" /> : <Maximize2 className="w-8 h-8" />}
+                  {isEditorExpanded ? <Minimize2 className="w-5 h-5 sm:w-8 sm:h-8" /> : <Maximize2 className="w-5 h-5 sm:w-8 sm:h-8" />}
                 </button>
              </div>
           </div>
           <div className="flex-1">
             <BlocklyEditor ref={editorRef} onCodeChange={setCurrentCode} isRunning={isRunning} />
           </div>
-        </section>
+         </section>
 
-        <section className={`${isEditorExpanded ? 'hidden' : 'w-[60%]'} h-full px-6 py-4 flex flex-col overflow-y-auto bg-[#f8fafc] relative transition-all duration-300`}>
+         <section className={`${isEditorExpanded ? 'hidden' : 'w-[55%] lg:w-[58%] xl:w-[60%]'} h-full px-6 py-4 flex flex-col overflow-y-auto bg-[#f8fafc] relative transition-all duration-300`}>
           {/* Playful environment background */}
           <div className="absolute inset-0 opacity-[0.2] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#94a3b8 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
           
