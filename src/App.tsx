@@ -7,6 +7,7 @@ import Board from './components/Board';
 import BlocklyEditor, { BlocklyEditorRef } from './components/BlocklyEditor';
 import smartGateBarrierImg from './assets/images/smart_gate_barrier_1779353380715.png';
 import colorSorterImg from './assets/images/color_sorter_img_1779355927492.png';
+import pirSlidingDoorImg from './assets/images/pir_sliding_door_1779367483266.png';
 
 export interface LearningTask {
   id: number;
@@ -361,6 +362,51 @@ const LEARNING_TASKS: LearningTask[] = [
       
       return { success: true, feedback: 'מדהים ביותר! בניתם קוד מיון מושלם וחכם בעזרת חיישן הצבע החדש. הלדים נדלקים בתיאום מושלם לפי זיהוי הצבע! אתם גאונים! 🌈🤖🔮🏆' };
     }
+  },
+  {
+    id: 9,
+    title: '🚶‍♂️ גלאי תנועה ודלת אוטומטית (משימה 9)',
+    description: 'בשיעור זה נשתמש בחיישן PIR, שיכול לזהות קרינה אינפרא אדומה מבני אדם. כאשר אדם או בעל חיים נכנסים לטווח הגילוי, חיישן ה-PIR ישלח אות לזיהוי תנועה, ויפתח דלת הזזה בעזרת מנוע צעד (בסימולציה נשתמש במנוע הקיים שמסתובב כשיש תנועה ועוצר כשאין קרינה).',
+    difficulty: 'בלש קוד מתקדם 🤖',
+    emoji: '🚶‍♂️',
+    objective: 'לתכנת את המערכת כך שאם חיישן ה-PIR מזהה תנועה (ערך 1), המנוע יתחיל להסתובב במהירות של 50 כדי לפתוח את הדלת ההזזה, וכאשר אין זיהוי תנועה (ערך 0) המנוע יעצור מיד!',
+    hints: [
+      'נעטוף הכל בלבנת "לעולמים" (forever) כדי לבצע בדיקה קבועה של זיהוי תנועה ברקע.',
+      'נשתמש בלבנת תנאי "אם... אחרת" (if ... else) מקטגוריית לוגיקה.',
+      'נבדוק בתנאי אם הערך מחיישן התנועה "PIR Motion Sensor" שווה ל-1 (תנועה זוהתה).',
+      'אם יש תנועה - נפעיל את המנוע במהירות 50 בעזרת לבנת "Motor Speed" מקטגוריית Output.',
+      'אחרת (אין תנועה) - נעצור את המנוע לחלוטין בעזרת הלבנה "Stop Motor"!'
+    ],
+    image: pirSlidingDoorImg,
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasPir = cleaned.includes("readPIRSensor") || cleaned.includes("readPIRSensor('P2')");
+      const hasIf = cleaned.includes('if(') || cleaned.includes('if ');
+      const hasMotorOn = cleaned.includes("setMotorSpeed(") && !cleaned.includes("setMotorSpeed(0)");
+      const hasMotorOff = cleaned.includes("setMotorSpeed(0)");
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasPir) {
+        return { success: false, feedback: 'שכחתם לקרוא את הערך מחיישן התנועה! גררו את לבנת "PIR Motion Sensor" למשטח העבודה.' };
+      }
+      if (!hasIf) {
+        return { success: false, feedback: 'השתמשו בלבנת תנאי "אם... אחרת" (if... else) מקטגוריית לוגיקה כדי לבדוק אם יש תנועה!' };
+      }
+      if (!hasMotorOn) {
+        return { success: false, feedback: 'ודאו שאתם מפעילים את המנוע למהירות כלשהי (למשל של 50, בעזרת Motor Speed) כאשר החיישן מזהה תנועה (ערך 1)!' };
+      }
+      if (!hasMotorOff) {
+        return { success: false, feedback: 'ודאו שאתם עוצרים את המנוע (בעזרת Stop Motor או מהירות 0) כאשר אין זיהוי תנועה!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שהמערכת תמשיך לזהות תנועה בשידור חי וללא הפסקה, ודאו שעטפתם הכול בתוך לולאת forever!' };
+      }
+      
+      return { success: true, feedback: 'מדהים ביותר! בניתם מערכת דלת אוטומטית חכמה המבוססת על גלאי תנועה PIR ומנוע! אתם גאוני רובוטיקה אמיתיים! 🚶‍♂️🚪⚙️🏆' };
+    }
   }
 ];
 
@@ -601,6 +647,10 @@ export default function App() {
       },
       readColorSensor: (port: string) => {
         const comp = componentsRef.current.find(c => c.type === 'color_sensor');
+        return comp ? comp.value : 0;
+      },
+      readPIRSensor: (port: string) => {
+        const comp = componentsRef.current.find(c => c.type === 'pir_sensor');
         return comp ? comp.value : 0;
       },
       temperature: () => {
