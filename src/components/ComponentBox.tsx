@@ -1,4 +1,4 @@
-import React from 'react';
+ import React from 'react';
 import { motion } from 'motion/react';
 import { ComponentInstance } from '../types';
 import { 
@@ -148,18 +148,34 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
       case 'red_led':
       case 'yellow_led':
         const isRed = instance.type === 'red_led';
-        const colorClass = isRed 
-          ? (instance.value > 0 ? 'bg-red-500 shadow-[0_0_20px_#ef4444]' : 'bg-red-900/40')
-          : (instance.value > 0 ? 'bg-yellow-400 shadow-[0_0_20px_#facc15]' : 'bg-yellow-900/40');
+        const brightness = instance.value > 1 
+          ? Math.min(instance.value / 1023, 1) 
+          : (instance.value > 0 ? 1 : 0);
+        
+        const ledStyle = isRed 
+          ? {
+              backgroundColor: brightness > 0 ? `rgba(239, 68, 68, ${0.4 + brightness * 0.6})` : 'rgba(127, 29, 29, 0.4)',
+              boxShadow: brightness > 0 ? `0 0 ${10 + brightness * 25}px rgba(239, 68, 68, ${0.5 + brightness * 0.5})` : 'none',
+            }
+          : {
+              backgroundColor: brightness > 0 ? `rgba(250, 204, 21, ${0.4 + brightness * 0.6})` : 'rgba(113, 63, 18, 0.4)',
+              boxShadow: brightness > 0 ? `0 0 ${10 + brightness * 25}px rgba(250, 204, 21, ${0.5 + brightness * 0.5})` : 'none',
+            };
         const borderColor = isRed ? 'border-red-950' : 'border-yellow-950';
 
         return (
           <div className="flex flex-col items-center justify-center gap-1 scale-125">
              <div className="relative">
                 {/* Glass Bulb */}
-                <div className={`w-10 h-10 rounded-full border-2 ${borderColor} shadow-lg transition-all duration-300 ${colorClass} flex items-center justify-center`}>
+                <div 
+                   className={`w-10 h-10 rounded-full border-2 ${borderColor} transition-all duration-300 flex items-center justify-center`}
+                   style={ledStyle}
+                >
                    {/* Internal Filament/Effect */}
-                   <div className={`w-4 h-4 rounded-full ${instance.value > 0 ? 'bg-white/40 blur-[4px]' : 'bg-black/20'}`} />
+                   <div 
+                      className="w-4 h-4 rounded-full bg-white/50 blur-[3px] transition-all duration-300" 
+                      style={{ opacity: brightness }}
+                   />
                 </div>
                 {/* Reflection highlight */}
                 <div className="absolute top-1.5 left-2 w-3 h-3 bg-white/30 rounded-full blur-[1px]" />
