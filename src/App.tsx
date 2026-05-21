@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
+ import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code, Trophy, Sparkles, Lightbulb, CheckCircle2, ChevronRight, ChevronLeft, Award } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
@@ -100,6 +100,80 @@ const LEARNING_TASKS: LearningTask[] = [
       }
 
       return { success: true, feedback: 'מדהים ביותר! פתרתם את האתגר של הבהוב ממתג בין האדום לצהוב כמו מקצוענים! 🏆' };
+    }
+  },
+  {
+    id: 3,
+    title: 'לחצן מפעיל לד צהוב (משימה 3 🔵)',
+    description: 'השתמשו בלחצן הכחול שעל הלוח (Push Button) כדי להדליק את נורת ה-LED הצהובה!',
+    difficulty: 'קל',
+    emoji: '🔵',
+    objective: 'ליצור קוד המוודא: מתי שלוחצים על הלחצן הכחול (Push Button) שעל גבי הלוח, נורת ה-LED הצהובה נדלקת!',
+    hints: [
+      'גררו לבנת "forever" לעולמים כדי לבדוק את הלחצן באופן קבוע.',
+      'הוסיפו לבנת תנאי "if" (אם) מתוך קטגוריית "Logic" (לוגיקה).',
+      'בדקו האם הערך של הלבנה "Push Button" (מקטגוריית Sensors) שווה ל-1.',
+      'בתוך גוף התנאי, הכניסו את הלבנה "Yellow Led ON" (מקטגוריית Output) כדי להדליק את הלד הצהוב!'
+    ],
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasPushButton = cleaned.includes("digitalRead('P8')") || cleaned.includes('digitalRead("P8")');
+      const hasYellowOn = cleaned.includes("setLedState('yellow',1)") || cleaned.includes('setLedState("yellow",1)');
+      const hasIf = cleaned.includes('if(') || cleaned.includes('if ');
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasPushButton) {
+        return { success: false, feedback: 'שכחתם להשתמש בלבנת הלחצן הכחול (Push Button) או לקרוא מפין P8!' };
+      }
+      if (!hasYellowOn) {
+        return { success: false, feedback: 'שכחתם להדליק את הלד הצהוב (Yellow Led ON)!' };
+      }
+      if (!hasIf) {
+        return { success: false, feedback: 'השתמשו בלבנת תנאי "if" מתוך קטגוריית הלוגיקה כדי לבדוק את מצב הלחצן!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שהמיקרוביט יבדוק את מצב הלחצן כל הזמן, עליכם לעטוף את התנאי בתוך לולאת forever!' };
+      }
+      
+      return { success: true, feedback: 'מדהים ביותר! יצרתם קוד מעולה שבודק את הלחצן הכחול על הלוח ומדליק את הלד הצהוב כשהוא לחוץ! 🏆' };
+    }
+  },
+  {
+    id: 4,
+    title: 'עמעם לדים (משימה 4 🎚️)',
+    description: 'שלטו בעוצמת האור של ה-LED באמצעות סיבוב חוגת הפוטנציומטר (עמעם)!',
+    difficulty: 'קשה',
+    emoji: '🎚️',
+    objective: 'ליצור קוד שלוקח את הערך הרציף של הפוטנציומטר (0 עד 1023) וכותב אותו ישירות כעוצמת פלט אנלוגית ללד (פין P4 או P5)!',
+    hints: [
+      'הוסיפו לבנת "forever" לעולמים כדי לעדכן את עוצמת הלד בכל רגע.',
+      'השתמשו בלבנת "Analog Write Pin" (מקטגוריית Output/פלט), ובחרו בפין P4 (הלד האדום) או פין P5 (הלד הצהוב).',
+      'חברו לכניסת הערך (To) את הלבנה של ה-"Potentiometer" (מקטגוריית Sensors)!',
+      'כשתסובבו את חוגת הפוטנציומטר על גבי המודול השמאלי, תראו את עוצמת ה-LED משתנה בהתאמה מדויקת.'
+    ],
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasAnalogWrite = cleaned.includes("analogWrite('P4'") || cleaned.includes('analogWrite("P4"') || cleaned.includes("analogWrite('P5'") || cleaned.includes('analogWrite("P5"');
+      const hasPot = cleaned.includes("analogRead('P3'") || cleaned.includes('analogRead("P3"');
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasAnalogWrite) {
+        return { success: false, feedback: 'שכחתם להשתמש בלבנת כתיבה אנלוגית (Analog Write Pin) לפינים P4 או P5 (הלדים)!' };
+      }
+      if (!hasPot) {
+        return { success: false, feedback: 'שכחתם לקרוא את הערך של הלבנה Potentiometer (פין P3) כדי לשלוט בעוצמת הלד!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שהעמעום יעבוד ברציפות, הכניסו את כל הלבנים שלכם בתוך לבנת forever!' };
+      }
+      
+      return { success: true, feedback: 'פשוט נפלא! הצלחתם ליצור עמעם (Dimmer) מושלם המקשר בין סיבוב הפוטנציומטר לעוצמת הזוהר של הלד! 🏆🌟' };
     }
   }
 ];
@@ -317,6 +391,10 @@ export default function App() {
         }
       },
       digitalWrite: (port: string, value: number) => {
+        setComponents(prev => prev.map(c => c.port === port ? { ...c, value: Number(value) } : c));
+      },
+      analogWrite: (port: string, value: number) => {
+        // We write analog values (0-1023) to outputs
         setComponents(prev => prev.map(c => c.port === port ? { ...c, value: Number(value) } : c));
       },
       analogRead: (port: string) => {
