@@ -31,7 +31,7 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
   const getRange = () => {
     switch(instance.type) {
       case 'temp_sensor': return { min: -10, max: 50, step: 1, unit: '°C' };
-      case 'sound_sensor': return { min: 0, max: 100, step: 1, unit: '%' };
+      case 'sound_sensor': return { min: 0, max: 150, step: 1, unit: ' dBA' };
       case 'humidity_sensor': return { min: 0, max: 100, step: 1, unit: '%' };
       case 'light_sensor': return { min: 0, max: 1023, step: 1, unit: 'lx' };
       case 'color_sensor': return { min: 0, max: 5, step: 1, unit: '' };
