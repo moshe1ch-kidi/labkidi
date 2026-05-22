@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { ComponentInstance, ComponentType } from '../types';
 import ComponentBox from './ComponentBox';
 import Microbit from './Microbit';
+import NoiseIcon from '../assets/ICONS/noise.png';
 import { 
   X, 
   Sun, 
@@ -12,7 +13,8 @@ import {
   RotateCw, 
   Zap, 
   Settings2, 
-  Cpu 
+  Cpu,
+  Mic
 } from 'lucide-react';
 
 const AVAILABLE_COMPONENTS = [
@@ -42,6 +44,15 @@ const AVAILABLE_COMPONENTS = [
     icon: Thermometer,
     color: '#06b6d4',
     description: 'מודד טמפרטורת מים או סביבה בדיוק רב במעלות צלזיוס',
+  },
+  {
+    type: 'sound_sensor' as const,
+    name: 'חיישן עוצמת רעש (מיקרופון)',
+    enName: 'Sound Level Sensor',
+    category: 'sensors' as const,
+    icon: Mic,
+    color: '#8b5cf6',
+    description: 'מד עוצמת הרעש והקול בסביבה (בפין אנלוגי)',
   },
   {
     type: 'humidity_sensor' as const,
@@ -397,7 +408,16 @@ export default function Board({ leds, components, onValueChange, onButtonPress, 
                                 borderColor: `${compItem.color}30` 
                               }}
                             >
-                               <Icon className="w-5 h-5" />
+                               {compItem.type === 'sound_sensor' ? (
+                                 <img 
+                                   src={NoiseIcon} 
+                                   alt={compItem.name} 
+                                   className="w-6 h-6 object-cover rounded-md"
+                                   referrerPolicy="no-referrer"
+                                 />
+                               ) : (
+                                 <Icon className="w-5 h-5" />
+                               )}
                             </div>
                             <div className="min-w-0 flex-1">
                                <h4 className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors truncate">{compItem.name}</h4>

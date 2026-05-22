@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ComponentInstance } from '../types';
+import NoiseIcon from '../assets/ICONS/noise.png';
 import { 
   Sun, 
   Thermometer, 
@@ -22,7 +23,7 @@ interface ComponentBoxProps {
 
 export default function ComponentBox({ instance, onValueChange, onHover, onSwapClick, boardScale }: ComponentBoxProps) {
   const isInput = [
-    'light_sensor', 'color_sensor', 'temp_sensor', 'pir_sensor', 'potentiometer', 
+    'sound_sensor', 'light_sensor', 'color_sensor', 'temp_sensor', 'pir_sensor', 'potentiometer', 
     'button', 'switch', 'humidity_sensor', 'ultrasonic_sensor', 'red_led', 
     'yellow_led', 'motor', 'servo', 'stepper_motor'
   ].includes(instance.type);
@@ -30,6 +31,7 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
   const getRange = () => {
     switch(instance.type) {
       case 'temp_sensor': return { min: -10, max: 50, step: 1, unit: '°C' };
+      case 'sound_sensor': return { min: 0, max: 100, step: 1, unit: '%' };
       case 'humidity_sensor': return { min: 0, max: 100, step: 1, unit: '%' };
       case 'light_sensor': return { min: 0, max: 1023, step: 1, unit: 'lx' };
       case 'color_sensor': return { min: 0, max: 5, step: 1, unit: '' };
@@ -325,6 +327,20 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
              <div className="mt-1 text-[7px] text-slate-400 font-black tracking-widest">DS18B20 TEMP</div>
           </div>
         );
+      case 'sound_sensor':
+        return (
+          <div className="relative w-full h-full flex flex-col items-center justify-center">
+             {/* Center the noise.png image exactly to cover the central area of the card */}
+             <div className="w-[5.25rem] h-[5.25rem] flex items-center justify-center p-1">
+                <img 
+                  src={NoiseIcon} 
+                  alt="Sound/Noise Sensor" 
+                  className="w-full h-full object-contain"
+                  referrerPolicy="no-referrer"
+                />
+             </div>
+          </div>
+        );
       case 'humidity_sensor':
         return (
           <div className="relative w-full h-full flex flex-col items-center justify-end pb-4">
@@ -607,11 +623,13 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
                      className="relative z-30 w-full h-6 appearance-none bg-transparent cursor-pointer"
                    />
                 </div>
-                <div className="flex justify-center -mt-0.5">
-                  <span className="text-[11px] font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md shadow-sm font-mono border border-blue-100">
-                    {getDisplayValue()}
-                  </span>
-                </div>
+                {instance.type !== 'sound_sensor' && (
+                  <div className="flex justify-center -mt-0.5">
+                    <span className="text-[11px] font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md shadow-sm font-mono border border-blue-100">
+                      {getDisplayValue()}
+                    </span>
+                  </div>
+                )}
              </div>
            ) : (
              <div className="w-full flex justify-center pb-1 shrink-0">
@@ -621,6 +639,13 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
              </div>
            )}
         </div>
+
+        {/* Absolute overlapping pill badge at the bottom center to match the reference image */}
+        {instance.type === 'sound_sensor' && (
+          <div className="absolute -bottom-4.5 left-1/2 -translate-x-1/2 z-40 bg-[#ecf3ff] text-[#3466f2] font-black border-2 border-amber-400 px-4 py-1.5 rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.15)] min-w-[4rem] text-center font-mono text-xs leading-none transition-all">
+            {getDisplayValue()}
+          </div>
+        )}
       </motion.div>
       
       {/* Port Label */}
