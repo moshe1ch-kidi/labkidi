@@ -657,6 +657,10 @@ export default function App() {
         const comp = componentsRef.current.find(c => c.type === 'temp_sensor');
         return comp ? comp.value : 25; // Default temp
       },
+      soundLevel: () => {
+        const comp = componentsRef.current.find(c => c.type === 'sound_sensor');
+        return comp ? comp.value : 50; // Default sound level
+      },
       lightLevel: () => {
         const comp = componentsRef.current.find(c => c.type === 'light_sensor');
         return comp ? comp.value : 0;
