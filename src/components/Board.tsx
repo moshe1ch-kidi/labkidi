@@ -36,12 +36,12 @@ const AVAILABLE_COMPONENTS = [
   },
   {
     type: 'temp_sensor' as const,
-    name: 'חיישן טמפרטורה',
-    enName: 'Temperature Sensor',
+    name: 'חיישן טמפרטורה אטום למים (DS18B20)',
+    enName: 'Waterproof Temperature Sensor (DS18B20)',
     category: 'sensors' as const,
     icon: Thermometer,
-    color: '#3b82f6',
-    description: 'מודד את טמפרטורת הסביבה במעלות צלזיוס',
+    color: '#06b6d4',
+    description: 'מודד טמפרטורת מים או סביבה בדיוק רב במעלות צלזיוס',
   },
   {
     type: 'humidity_sensor' as const,

@@ -285,18 +285,44 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
         );
       case 'temp_sensor':
         return (
-          <div className="relative w-full h-full flex items-center justify-center p-2">
-             <div className="relative z-10 w-12 h-14 bg-sky-500 rounded-lg flex flex-col items-center justify-start py-1.5 border-t-2 border-white/30 shadow-xl">
-                <div className="grid grid-cols-2 gap-1 px-1">
-                   {Array(8).fill(0).map((_, i) => (
-                     <div key={i} className="w-3.5 h-1.5 bg-white/20 rounded-full" />
-                   ))}
+          <div className="relative w-full h-full flex flex-col items-center justify-center p-0.5 uppercase">
+             {/* DS18B20 Waterproof temperature probe submerged in water container visual */}
+             <div className="relative w-16 h-18 flex items-center justify-center">
+                {/* Visual Glass/Water Tube container */}
+                <div className="absolute inset-x-2 bottom-1 top-4 bg-gradient-to-b from-cyan-400/20 to-blue-500/30 rounded-b-xl rounded-t-sm border border-white/30 shadow-inner overflow-hidden flex flex-col justify-end">
+                   {/* Water wave overlay */}
+                   <div className="w-full h-2/3 bg-cyan-400/20 animate-pulse relative">
+                      {/* Interactive bubbles representing heat/energy */}
+                      <div className="absolute bottom-1 left-2 w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0.2s', animationDuration: '2.5s' }} />
+                      <div className="absolute bottom-3 right-2 w-1 h-1 bg-white/50 rounded-full animate-bounce" style={{ animationDelay: '0.7s', animationDuration: '3.1s' }} />
+                   </div>
                 </div>
-                <div className="mt-auto flex flex-col items-center gap-1 mb-1">
-                   <Thermometer className="w-4 h-4 text-white opacity-80" />
-                   <div className="w-8 h-1 bg-sky-600 rounded-full" />
+
+                {/* Coiled black connection cable coming from top-left */}
+                <svg className="absolute -top-1 -left-2 w-10 h-8 opacity-90" viewBox="0 0 40 30" fill="none">
+                   <path d="M5 2 C 5 2, 8 10, 15 10 C 22 10, 20 18, 28 18 C 34 18, 32 24, 32 30" stroke="#1f2937" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+
+                {/* Black heat-shrink tube transition */}
+                <div className="absolute top-2 right-4.5 z-20 w-3 h-5 bg-neutral-800 rounded-md border-x border-neutral-700 flex flex-col justify-between items-center py-0.5">
+                   <div className="w-full h-[1px] bg-neutral-900" />
+                   <div className="w-2.5 h-[1px] bg-neutral-900" />
+                </div>
+
+                {/* Stainless steel cylindrical sensor cap (DS18B20 metal probe) */}
+                <div className="absolute top-6 right-5 z-15 w-2 h-10 bg-gradient-to-r from-slate-300 via-slate-100 to-slate-400 rounded-b-full border-x border-b border-slate-500 shadow-md flex justify-between">
+                   {/* Metallic surface glare */}
+                   <div className="w-[1.5px] h-full bg-white/50 opacity-80" />
+                   <div className="w-[1.5px] h-full bg-black/10" />
+                </div>
+                
+                {/* Floating digital temperature label inside */}
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-slate-900/80 px-1 py-0.5 rounded text-[7px] text-cyan-200 font-mono border border-cyan-500/30 shadow-sm">
+                   {instance.value}°C
                 </div>
              </div>
+             
+             <div className="mt-1 text-[7px] text-slate-400 font-black tracking-widest">DS18B20 TEMP</div>
           </div>
         );
       case 'humidity_sensor':

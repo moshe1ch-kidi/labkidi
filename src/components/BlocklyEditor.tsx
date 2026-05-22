@@ -15,6 +15,7 @@ import UltrasonicIcon from '@icons/ultrasonic-1.png';
 import LDRIcon from '@icons/ldr.png';
 import ColorSensorIcon from '@icons/colorsensor.png';
 import PIRSensorIcon from '@icons/pirsensor.png';
+import TempSensorIcon from '@icons/temp-1.png';
 import VarIcon from '@icons/var.png';
 import MathIcon from '@icons/math.png';
 import OutputIcon from '@icons/output-1.png';
@@ -156,6 +157,7 @@ export default forwardRef<BlocklyEditorRef, BlocklyEditorProps>(({ onCodeChange,
         ldr: LDRIcon, 
         colorSensor: ColorSensorIcon,
         pirSensor: PIRSensorIcon,
+        tempSensor: TempSensorIcon,
         push: PushIcon,
         motor: MotorIcon,
         servo: ServoIcon,
