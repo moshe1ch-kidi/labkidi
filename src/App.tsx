@@ -570,6 +570,13 @@ export default function App() {
   useEffect(() => {
     componentsRef.current = components;
   }, [components]);
+
+  useEffect(() => {
+    const activeTask = LEARNING_TASKS[currentTaskIndex];
+    if (activeTask) {
+      prepareBoardForTask(activeTask.id);
+    }
+  }, [currentTaskIndex]);
   
   const editorRef = useRef<BlocklyEditorRef>(null);
   const runState = useRef<{ isRunning: boolean }>({ isRunning: false });
@@ -591,6 +598,10 @@ export default function App() {
       case 'color_sensor':
         name = 'Color Sensor';
         value = 0; // Default: Red
+        break;
+      case 'sound_sensor':
+        name = 'Sound Level Sensor';
+        value = 45;
         break;
       case 'humidity_sensor':
         name = 'Humidity Sensor';
@@ -654,6 +665,32 @@ export default function App() {
     }
 
     setComponents(prev => prev.map(c => c.id === id ? { ...c, type: newType, name, value } : c));
+  };
+
+  const prepareBoardForTask = (taskId: number) => {
+    let newComponents = JSON.parse(JSON.stringify(INITIAL_COMPONENTS)) as ComponentInstance[];
+    
+    if (taskId === 8) {
+      newComponents = newComponents.map(c => 
+        c.port === 'P0' && c.type === 'humidity_sensor'
+          ? { ...c, id: 'color-1', type: 'color_sensor', name: 'Color Sensor', value: 0 }
+          : c
+      );
+    } else if (taskId === 9) {
+      newComponents = newComponents.map(c => 
+        c.port === 'P0' && c.type === 'humidity_sensor'
+          ? { ...c, id: 'pir-1', type: 'pir_sensor', name: 'PIR Motion Sensor', value: 0 }
+          : c
+      );
+    } else if (taskId === 10) {
+      newComponents = newComponents.map(c => 
+        c.port === 'P0' && c.type === 'humidity_sensor'
+          ? { ...c, id: 'sound-1', type: 'sound_sensor', name: 'Sound Level Sensor', value: 45 }
+          : c
+      );
+    }
+    
+    setComponents(newComponents);
   };
 
   const stopSimulation = useCallback(() => {
@@ -1078,7 +1115,7 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-                className="bg-white rounded-[2.5rem] border-4 border-amber-400 shadow-2xl relative w-full h-[85vh] max-w-lg overflow-hidden flex flex-col z-[100]"
+                className="bg-white rounded-[2.5rem] border-4 border-amber-400 shadow-2xl relative w-full h-[85vh] max-w-2xl overflow-hidden flex flex-col z-[100]"
                 style={{ direction: 'rtl' }}
               >
                 {/* Header */}
@@ -1150,11 +1187,23 @@ export default function App() {
                     )}
 
                     {/* Objective (Target) */}
-                    <div className="bg-[#f0f9ff] text-sky-800 p-4 rounded-2xl border-2 border-[#bae6fd] flex flex-col gap-1 shadow-sm">
+                    <div className="bg-[#f0f9ff] text-sky-800 p-4 rounded-2xl border-2 border-[#bae6fd] flex flex-col gap-1 shadow-sm font-sans">
                       <span className="text-[11px] font-black text-sky-600 uppercase tracking-wider flex items-center gap-1">
                         <Sparkles className="w-4 h-4 text-sky-500" /> המטרה שלכם:
                       </span>
                       <p className="text-xs font-bold leading-relaxed">{LEARNING_TASKS[currentTaskIndex].objective}</p>
+                      
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          prepareBoardForTask(LEARNING_TASKS[currentTaskIndex].id);
+                          showToast('הרכיבים על הלוח סודרו והותאמו למשימה בהצלחה! 🔌', 'success');
+                        }}
+                        className="mt-3 w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md transition-all cursor-pointer border border-blue-500"
+                      >
+                        <span>סדר עבורי את רכיבי הלוח למשימה 🔌</span>
+                      </motion.button>
                     </div>
 
                     {/* Hints step-by-step list */}
