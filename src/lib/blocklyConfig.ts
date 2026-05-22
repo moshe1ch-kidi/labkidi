@@ -12,7 +12,7 @@ export const COLORS = {
 };
 
 // Define custom blocks for Micro:bit
-export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, colorSensor: string, pirSensor: string, tempSensor: string, push: string, motor: string, servo: string, led: string, buzzer: string, forever: string, wait: string, repeat: string }) => {
+export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, colorSensor: string, pirSensor: string, tempSensor: string, soundSensor: string, push: string, motor: string, servo: string, led: string, buzzer: string, forever: string, wait: string, repeat: string }) => {
   // Buzzer / Play Tone
   Blockly.Blocks['microbit_buzzer'] = {
     init: function() {
@@ -313,6 +313,24 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
 
   pythonGenerator.forBlock['microbit_temperature'] = function() {
     return [`microbit.temperature()`, PythonOrder.FUNCTION_CALL];
+  };
+
+  // Sound Sensor (Noise level)
+  Blockly.Blocks['microbit_sound_sensor'] = {
+    init: function() {
+      this.appendDummyInput()
+          .appendField('Noise level')
+          .appendField(new Blockly.FieldImage(icons.soundSensor, 30, 30, 'sound_sensor'));
+      this.setOutput(true, 'Number');
+      this.setColour(COLORS.SENSOR);
+    }
+  };
+  javascriptGenerator.forBlock['microbit_sound_sensor'] = function() {
+    return [`microbit.soundLevel()`, Order.FUNCTION_CALL];
+  };
+
+  pythonGenerator.forBlock['microbit_sound_sensor'] = function() {
+    return [`microbit.sound_level()`, PythonOrder.FUNCTION_CALL];
   };
 
   // Light Level
@@ -688,6 +706,7 @@ export const toolbox = {
       contents: [
         { kind: 'block', type: 'microbit_analog_read' },
         { kind: 'block', type: 'microbit_temperature' },
+        { kind: 'block', type: 'microbit_sound_sensor' },
         { kind: 'block', type: 'microbit_moisture_sensor' },
         { kind: 'block', type: 'microbit_ultrasonic_sensor' },
         { kind: 'block', type: 'microbit_potentiometer' },
