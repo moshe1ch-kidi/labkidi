@@ -8,6 +8,7 @@ import BlocklyEditor, { BlocklyEditorRef } from './components/BlocklyEditor';
 import smartGateBarrierImg from './assets/images/smart_gate_barrier_1779353380715.png';
 import colorSorterImg from './assets/images/color_sorter_img_1779355927492.png';
 import pirSlidingDoorImg from './assets/images/pir_sliding_door_1779367483266.png';
+import noHonkingStreetImg from './assets/images/no_honking_street_1779475543747.png';
 
 export interface LearningTask {
   id: number;
@@ -406,6 +407,66 @@ const LEARNING_TASKS: LearningTask[] = [
       }
       
       return { success: true, feedback: 'מדהים ביותר! בניתם מערכת דלת אוטומטית חכמה המבוססת על גלאי תנועה PIR ומנוע! אתם גאוני רובוטיקה אמיתיים! 🚶‍♂️🚪⚙️🏆' };
+    }
+  },
+  {
+    id: 10,
+    title: '🔇 רחוב שקט - שלט "אסור לצפור" (משימה 10)',
+    description: 'בשיעור זה נתכנת שלט חכם למניעת רעש ברחוב עירוני! ברחוב מותקנות שתי נורות (צהובה ואדומה) ושלט "אסור לצפור". ברגע שרמת הרעש שקטה (מתחת ל-100 dBA), הנורה הצהובה תדלק ברחוב בנחת. ברגע שמתרחש רעש חריג או צפירה (החיישן עובר את ה-100 dBA), הנורה האדומה תתחיל להבהב במהירות כדי להזהיר!',
+    difficulty: 'מומחה חכם 🏆',
+    emoji: '🔇',
+    objective: 'לתכנת את המערכת כך שאם חיישן הרעש (Noise level) קטן מ-100 dBA, נורת הלד הצהובה תידלק והאדומה תכבה. וכאשר עוצמת הרעש היא 100 dBA ומעלה, הנורה האדומה תהבהב (הדלקה, המתנה, כיבוי, המתנה) והצהובה תכבה לחלוטין!',
+    hints: [
+      'נעטוף את כל הקוד בתוך לולאת "לעולמים" (forever) כדי שהמערכת תקשיב לרחוב כל הזמן.',
+      'נגרור לבנת "אם... אחרת" (if... else) מקטגוריית לוגיקה.',
+      'בתוך התנאי ("אם"): נבדוק האם ערך הלבנה "Noise level" (חיישן הרעש) קטן מ-100.',
+      'במידה ופחות מ-100 (שקט ברחוב): נכבה את האדום (Red Led OFF) ונדליק את הצהוב (Yellow Led ON).',
+      'במידה ו-100 ומעלה (רעש חזק): נכבה מיד את הצהוב (Yellow Led OFF) ולאחר מכן נרשום את קוד ההבהוב של ה-Red Led: נפעיל אותו (Red Led ON), נמתין חצי שנייה או שנייה (Wait), נכבה אותו (Red Led OFF), ונמתין שוב!'
+    ],
+    image: noHonkingStreetImg,
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasSoundSensor = cleaned.includes("soundLevel()");
+      const hasIf = cleaned.includes('if(') || cleaned.includes('if ');
+      const hasYellow = cleaned.includes("setLedState('yellow',") || cleaned.includes('setLedState("yellow",');
+      const hasRed = cleaned.includes("setLedState('red',") || cleaned.includes('setLedState("red",');
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+      
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasSoundSensor) {
+        return { success: false, feedback: 'אופס! שכחתם לקרוא את רמת הרעש מחיישן הרעש (Noise level). גררו את הלבנה "Noise level" מקטגוריית החיישנים למשטח העבודה.' };
+      }
+      if (!hasIf) {
+        return { success: false, feedback: 'השתמשו בלוגיקת תנאי "אם... אחרת" (if... else) כדי לבדוק האם עוצמת הרעש היא מתחת ל-100 dBA או מעל!' };
+      }
+      if (!hasYellow) {
+        return { success: false, feedback: 'ודאו שאתם שולטים בנורת הלד הצהובה (Yellow LED) בהתאם לתנאי הרעש!' };
+      }
+      if (!hasRed) {
+        return { success: false, feedback: 'אל תשכחו לשלוט בנורת הלד האדומה (Red LED) כדי שהיא תוכל להבהב בהתאם כשמזהים רעש חריג!' };
+      }
+      
+      const hasYellowOn = cleaned.includes("setLedState('yellow',1)") || cleaned.includes('setLedState("yellow",1)');
+      const hasYellowOff = cleaned.includes("setLedState('yellow',0)") || cleaned.includes('setLedState("yellow",0)');
+      const hasRedOn = cleaned.includes("setLedState('red',1)") || cleaned.includes('setLedState("red",1)');
+      const hasRedOff = cleaned.includes("setLedState('red',0)") || cleaned.includes('setLedState("red",0)');
+
+      if (!hasYellowOn) {
+        return { success: false, feedback: 'זכרו להדליק (ON) את נורת הלד הצהובה (Yellow LED) כשעוצמת הרעש שקטה (מתחת ל-100 dBA).' };
+      }
+      if (!hasYellowOff) {
+        return { success: false, feedback: 'ודאו שאתם מכבים (OFF) את הלד הצהוב (Yellow LED) כאשר מתחיל רעש חזק או צפירות (100 ומעלה).' };
+      }
+      if (!hasRedOn || !hasRedOff) {
+        return { success: false, feedback: 'כדי שהנורה האדומה תוכל להבהב כשרעש עובר את ה-100 dBA, עליכם להדליק (ON) ולכבות (OFF) אותה, בתוספת לבנת המתנה ביניהן!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שהבדיקה תעבוד ברציפות וללא הפסקה עבור כל רכב שנוסע ברחוב, עטפו את כל הלבנות שלכם בלולאת forever!' };
+      }
+      
+      return { success: true, feedback: 'כל הכבוד! בניתם מערכת בטיחות ואיכות סביבה מופלאה למניעת רעש ברחוב שקט! השלט מנצנץ, הרעש מנוטר והלדים מתריעים בדיוק לפי ההנחיות! אתם פשוט אלופי קוד ומהנדסי רובוטיקה מומחים! 🔇🚗🚦🏆🌟' };
     }
   }
 ];
