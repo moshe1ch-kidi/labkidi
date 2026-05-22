@@ -12,7 +12,7 @@ export const COLORS = {
 };
 
 // Define custom blocks for Micro:bit
-export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, colorSensor: string, pirSensor: string, push: string, motor: string, servo: string, led: string, buzzer: string, forever: string, wait: string, repeat: string }) => {
+export const defineBlocks = (icons: { moisture: string, ultrasonic: string, potentiometer: string, ldr: string, colorSensor: string, pirSensor: string, tempSensor: string, push: string, motor: string, servo: string, led: string, buzzer: string, forever: string, wait: string, repeat: string }) => {
   // Buzzer / Play Tone
   Blockly.Blocks['microbit_buzzer'] = {
     init: function() {
@@ -301,7 +301,8 @@ export const defineBlocks = (icons: { moisture: string, ultrasonic: string, pote
   Blockly.Blocks['microbit_temperature'] = {
     init: function() {
       this.appendDummyInput()
-          .appendField('temperature');
+          .appendField('Temperature')
+          .appendField(new Blockly.FieldImage(icons.tempSensor, 30, 30, 'temperature'));
       this.setOutput(true, 'Number');
       this.setColour(COLORS.SENSOR);
     }
@@ -686,6 +687,7 @@ export const toolbox = {
       cssConfig: { row: 'cat-bg-sensor', icon: 'cat-icon-sensor', container: 'cat-sensor' },
       contents: [
         { kind: 'block', type: 'microbit_analog_read' },
+        { kind: 'block', type: 'microbit_temperature' },
         { kind: 'block', type: 'microbit_moisture_sensor' },
         { kind: 'block', type: 'microbit_ultrasonic_sensor' },
         { kind: 'block', type: 'microbit_potentiometer' },
