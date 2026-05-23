@@ -1,5 +1,5 @@
 {
-  "name": "Micro:bit Virtual Lab1",
+  "name": "microbit simlab",
   "description": "An interactive electronic board simulator for Micro:bit with sensors and Blockly integration.",
   "requestFramePermissions": [],
   "majorCapabilities": [
