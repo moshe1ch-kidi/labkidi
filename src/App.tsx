@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code, Trophy, Sparkles, Lightbulb, CheckCircle2, ChevronRight, ChevronLeft, Award } from 'lucide-react';
+import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code, Trophy, Sparkles, Lightbulb, CheckCircle2, ChevronRight, ChevronLeft, Award, Smartphone, Monitor } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
 import { ComponentInstance, ComponentType } from './types';
 import Board from './components/Board';
@@ -532,6 +532,20 @@ const LEARNING_TASKS: LearningTask[] = [
 ];
 
 export default function App() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const isTouch = window.matchMedia('(pointer: coarse)').matches;
+      const isNarrow = window.innerWidth < 1024;
+      setIsMobile(isTouch || isNarrow);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [components, setComponents] = useState<ComponentInstance[]>(INITIAL_COMPONENTS);
   const [leds, setLeds] = useState<boolean[][]>(Array(5).fill(null).map(() => Array(5).fill(false)));
   const [hoveredSensorId, setHoveredSensorId] = useState<string | null>(null);
@@ -922,6 +936,73 @@ export default function App() {
     console.log(`Button ${button} pressed`);
   };
 
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-[#f3f7ff] flex flex-col items-center justify-center p-6 text-center select-none font-sans" dir="ltr">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="max-w-md w-full bg-white rounded-3xl border-4 border-amber-400 p-8 shadow-[0_8px_0_#f59e0b] flex flex-col items-center gap-6"
+        >
+          {/* Animated Illustration: Smartphone / Monitor Switcher */}
+          <div className="relative w-32 h-32 flex items-center justify-center bg-amber-50 rounded-full border-2 border-amber-200">
+            <motion.div
+              animate={{ 
+                scale: [1, 1.05, 1],
+                rotate: [0, 4, -4, 0]
+              }}
+              transition={{ 
+                duration: 5, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="text-amber-500"
+            >
+              <Monitor className="w-16 h-16 stroke-[2]" />
+            </motion.div>
+            
+            <motion.div
+              animate={{ 
+                y: [0, -6, 0],
+                x: [0, 6, 0]
+              }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="absolute bottom-4 right-4 bg-red-500 text-white p-2.5 rounded-2xl border-4 border-white shadow-lg"
+            >
+              <Smartphone className="w-6 h-6 stroke-[2.5]" />
+            </motion.div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-black text-slate-800 tracking-tight leading-normal">
+              Screen is too small! 🖥️⚡
+            </h1>
+            <p className="text-slate-600 text-sm font-bold leading-relaxed px-2">
+              The <span className="text-[#ff9f1c] font-black">microbit simlab</span> simulator and Blockly editor require a larger screen and keyboard for the optimal learning, programming, and circuit-building experience.
+            </p>
+          </div>
+
+          <div className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 flex flex-col gap-1.5 text-xs text-slate-500 font-bold">
+            <div className="flex items-center justify-center gap-1.5 text-slate-700">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span>Recommended Setup:</span>
+            </div>
+            <p>Please open this application on a Laptop, Desktop computer, or Tablet in landscape mode.</p>
+          </div>
+
+          <p className="text-[11px] text-slate-400 font-semibold tracking-wide">
+            Minimum required screen width: 1024px
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen bg-[#f3f7ff] text-slate-800 font-sans">
       <header className="h-20 bg-white border-b-4 border-[#e2e8f0] flex items-center justify-between px-8 shrink-0 z-30 shadow-sm relative">
@@ -931,7 +1012,7 @@ export default function App() {
                <RefreshCcw className="w-7 h-7" />
              </div>
              <div>
-               <h1 className="text-2xl font-black tracking-tight text-[#1e293b] leading-none">STACK<span className="text-[#3b82f6]">KIDI</span> <span className="text-[#f59e0b]">LAB</span></h1>
+               <h1 className="text-2xl font-black tracking-tight text-[#1e293b] leading-none">microbit <span className="text-[#ff9f1c]">simlab</span></h1>
                <div className="flex items-center gap-2 mt-1">
                   <div className={`w-2.5 h-2.5 rounded-full ${isRunning ? 'bg-green-500 animate-pulse' : 'bg-[#94a3b8]'}`} />
                   <p className="text-[11px] text-[#64748b] font-bold uppercase tracking-wider">{isRunning ? 'Running...' : 'Ready!'}</p>
