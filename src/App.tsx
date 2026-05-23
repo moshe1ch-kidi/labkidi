@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
+ import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code, Trophy, Sparkles, Lightbulb, CheckCircle2, ChevronRight, ChevronLeft, Award } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
@@ -9,6 +9,7 @@ import smartGateBarrierImg from './assets/images/smart_gate_barrier_177935338071
 import colorSorterImg from './assets/images/color_sorter_img_1779355927492.png';
 import pirSlidingDoorImg from './assets/images/pir_sliding_door_1779367483266.png';
 import noHonkingStreetImg from './assets/images/no_honking_street_1779475543747.png';
+import smartGreenhouseImg from './assets/images/smart_greenhouse_1779512790896.png';
 
 export interface LearningTask {
   id: number;
@@ -155,8 +156,8 @@ const LEARNING_TASKS: LearningTask[] = [
     objective: 'ליצור קוד שלוקח את הסיבוב של הבורר (0 עד 1023) ושולח אותו ישירות לעוצמת הלד כדי להחליש או לחזק את האור בהתאמה!',
     hints: [
       'נזדקק ללבנת "לעולמים" (forever) כדי לעדכן את עוצמת האור בכל פעם שמסובבים את החוגה.',
-      'נשתמש בלבנה המעולה "Analog Write Pin" (מקטגוריית Output) - היא יכולה לשלוח עוצמות רכות ולא רק הדלקה/כיבוי! נכוון את הפין שלה ללד שלנו (P4 לאדום או P5 לצהוב).',
-      'למקום של הערך (To), נחבר את הלבנה העגולה "Potentiometer" (חיישן P3) מקטגוריית החיישנים.',
+      'נשתמש בלבנה המעולה "Analog Write Pin" (מקטגוריית Output) - היא יכולה לשלוח עוצמות רכות ולא רק הדלקה/כיבוי! נכוון את הלבנה ללד האדום או הצהוב שלנו.',
+      'למקום של הערך (To), נחבר את הלבנה העגולה "Potentiometer" מקטגוריית החיישנים.',
       'תפעילו את הסימולטור, סובבו את החוגה השמאלית בחצי עיגול וצפו בקסם: האור נחלש ומתחזק בהתאם ליד שלכם!'
     ],
     testCode: (jsCode: string) => {
@@ -169,10 +170,10 @@ const LEARNING_TASKS: LearningTask[] = [
         return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
       }
       if (!hasAnalogWrite) {
-         return { success: false, feedback: 'שכחתם להשתמש בלבנת כתיבה אנלוגית (Analog Write Pin) לפין P4 או P5 (הלדים), שמאפשרת עוצמות אור משתנות!' };
+         return { success: false, feedback: 'שכחתם להשתמש בלבנת כתיבה אנלוגית (Analog Write Pin) השולטת בלדים, שמאפשרת עוצמות אור משתנות!' };
       }
       if (!hasPot) {
-         return { success: false, feedback: 'שכחתם לקרוא את המצב של ה-Potentiometer (פין P3) כדי לשמוע כמה סובבנו את החוגה!' };
+         return { success: false, feedback: 'שכחתם לקרוא את המצב של ה-Potentiometer כדי לשמוע כמה סובבנו את החוגה!' };
       }
       if (!hasLoop) {
          return { success: false, feedback: 'כדי שהעמעום יעבוד כל הזמן בכיף, ודאו שכל הלבנות שלכם נמצאות בתוך המלבן של forever!' };
@@ -191,7 +192,7 @@ const LEARNING_TASKS: LearningTask[] = [
     hints: [
       'נשתמש בלבנת "לעולמים" (forever) כדי שהמערכת תקשיב לחיישן ותגיב לשינויים ללא הפסקה.',
       'ניעזר בלבנת תנאי "אם ... אחרת" (if ... else) מקטגוריית הלוגיקה.',
-      'נבדוק האם הערך שמתקבל מלבנת "Light Sensor(LDR)" (בפין P1) קטן מ-300 (או מספר קטן אחר שמסמל חושך).',
+      'נבדוק האם הערך שמתקבל מלבנת "Light Sensor(LDR)" קטן מ-300 (או מספר קטן אחר שמסמל חושך).',
       'אם התנאי מתקיים (כלומר חשוך) - נדליק את הלד הצהוב (Yellow Led ON), ואחרת (כלומר מואר) - נכבה אותו (Yellow Led OFF)!'
     ],
     testCode: (jsCode: string) => {
@@ -206,7 +207,7 @@ const LEARNING_TASKS: LearningTask[] = [
         return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
       }
       if (!hasLdr) {
-        return { success: false, feedback: 'אופס! שכחתם לקרוא את רמות האור מחיישן האור (Light Sensor LDR) בפין P1. גררו את הלבנה "Light Sensor(LDR)" לקוד.' };
+        return { success: false, feedback: 'אופס! שכחתם לקרוא את רמות האור מחיישן האור (Light Sensor LDR). גררו את הלבנה "Light Sensor(LDR)" לקוד.' };
       }
       if (!hasIf) {
         return { success: false, feedback: 'צריך לבצע בדיקה לוגית - האם חשוך עכשיו? השתמשו בלבנת "אם... אחרת" (if... else) או "אם" (if) מקטגוריית לוגיקה!' };
@@ -468,6 +469,65 @@ const LEARNING_TASKS: LearningTask[] = [
       
       return { success: true, feedback: 'כל הכבוד! בניתם מערכת בטיחות ואיכות סביבה מופלאה למניעת רעש ברחוב שקט! השלט מנצנץ, הרעש מנוטר והלדים מתריעים בדיוק לפי ההנחיות! אתם פשוט אלופי קוד ומהנדסי רובוטיקה מומחים! 🔇🚗🚦🏆🌟' };
     }
+  },
+  {
+    id: 11,
+    title: '🌿 חממה חכמה - בקרת אקלים ואיוורור (משימה 11)',
+    description: 'בחממות מודרניות מגדלים צמחים רגישים הדורשים אקלים מושלם. במשימה הזו נבנה מערכת בקרת אקלים חכמה: כאשר הטמפרטורה והלחות עולות מעבר לערכים הרצויים, המערכת תפתח את החלון באמצעות מנוע הסרוו ותפעיל את המאוורר כדי לאוורר את החממה!',
+    difficulty: 'מהנדס על 🏆🌿',
+    emoji: '🌿',
+    objective: 'לתכנת את המערכת כך שרק אם רמת הלחות (Moisture) גבוהה מ-60% וגם הטמפרטורה (Temperature) גבוהה מ-30 מעלות צלזיוס, השער/חלון ייפתחו (מנוע סרוו לזווית 180 מעלות) והמאוורר יופעל במהירות 100! אחרת, השער ייסגר (מנוע סרוו לזווית 0 מעלות) והמאוורר ייעצר (מהירות 0 מעלות/Stop)!',
+    hints: [
+      'נעטוף את כל הקוד בתוך לולאת "לעולמים" (forever) כדי שהמערכת תקשיב למתרחש בחממה כל הזמן ברקע.',
+      'נגרור לבנת "אם... אחרת" (if... else) מקטגוריית לוגיקה.',
+      'בתוך תנאי ה-"אם", נגרור לבנה לוגית של "וגם" (and) כדי לשלב את שני התנאים.',
+      'בתנאי הראשון של ה-"וגם", נבדוק אם "Moisture" גדול מ-60.',
+      'בתנאי השני של ה-"וגם", נבדוק אם "Temperature" גדול מ-30 מעלות.',
+      'אם שני התנאים מתקיימים יחדיו: נפתח את החלון (Servo Angle ל-180 מעלות) ונפעיל את המאוורר (Motor Speed ל-100).',
+      'אחרת (אם אחד התנאים לפחות לא מתקיים): נסגור את החלון (Servo Angle ל-0 מעלות) ונכבה את המאוורר (Stop Motor או Motor Speed ל-0)!'
+    ],
+    image: smartGreenhouseImg,
+    testCode: (jsCode: string) => {
+      const cleaned = jsCode.replace(/\s+/g, '');
+      const hasMoisture = cleaned.includes("analogRead('P0')") || cleaned.includes('analogRead("P0")');
+      const hasTemp = cleaned.includes("temperature()");
+      const hasIf = cleaned.includes('if(') || cleaned.includes('if ');
+      const hasServoOn = cleaned.includes("setServoAngle(180)") || cleaned.includes("setServoAngle('180')") || cleaned.includes('setServoAngle("180")');
+      const hasServoOff = cleaned.includes("setServoAngle(0)") || cleaned.includes("setServoAngle('0')") || cleaned.includes('setServoAngle("0")');
+      const hasMotorOn = (cleaned.includes("setMotorSpeed(100)") || cleaned.includes("setMotorSpeed('100')") || cleaned.includes('setMotorSpeed("100")') || (cleaned.includes("setMotorSpeed(") && !cleaned.includes("setMotorSpeed(0)")));
+      const hasMotorOff = cleaned.includes("setMotorSpeed(0)");
+      const hasLoop = cleaned.includes('while(') || cleaned.includes('while ') || cleaned.includes('setTimeout') || cleaned.includes('Promise');
+
+      if (!jsCode || jsCode.trim() === '') {
+        return { success: false, feedback: 'סביבת העבודה ריקה! גררו לבנים כדי לבנות את הקוד.' };
+      }
+      if (!hasMoisture) {
+        return { success: false, feedback: 'אופס! שכחתם לקרוא את הלחות מחיישן הלחות (Moisture). גררו את הלבנה "Moisture" לקוד.' };
+      }
+      if (!hasTemp) {
+        return { success: false, feedback: 'אופס! שכחתם לקרוא את הטמפרטורה מחיישן הטמפרטורה (Temperature). גררו את הלבנה "Temperature" לקוד.' };
+      }
+      if (!hasIf) {
+        return { success: false, feedback: 'השתמשו בלבנת תנאי "אם... אחרת" (if... else) מקטגוריית לוגיקה כדי לבדוק האם התנאים מתקיימים!' };
+      }
+      if (!hasServoOn) {
+        return { success: false, feedback: 'אל תשכחו לכוון את מנוע הסרוו ל-180 מעלות כדי לפתוח את החלון/דלת של החממה כשהתנאים מתקיימים!' };
+      }
+      if (!hasServoOff) {
+        return { success: false, feedback: 'ודאו שאתם סוגרים את חלון הסרוו (0 מעלות) כאשר לפחות אחד מהערכים (טמפרטורה או לחות) תקין ואין צורך באיוורור!' };
+      }
+      if (!hasMotorOn) {
+        return { success: false, feedback: 'שכחתם להפעיל את המאוורר (מנוע) כדי לאוורר את החממה כשהוא חם או לח מדי!' };
+      }
+      if (!hasMotorOff) {
+        return { success: false, feedback: 'ודאו שאתם מכבים את המאוורר (מהירות 0 או עצירת מנוע) כאשר התנאים לא מתקיימים!' };
+      }
+      if (!hasLoop) {
+        return { success: false, feedback: 'כדי שהבדיקה והאוורור יבוצעו כל הזמן ובאופן אוטומטית, ודאו שעטפתם את כל הלבנות בתוך לולאת forever!' };
+      }
+
+      return { success: true, feedback: 'מדהים להפליא! הצלחתם לתכנת חממה חכמה ואקולוגית שמבצעת בקרת אקלים ואיוורור אוטומטי בצורה מושלמת! אתם פשוט אלופי קוד ורובוטיקה ברמה הגבוהה ביותר! 🌿🤖⚙️💨🏆' };
+    }
   }
 ];
 
@@ -688,6 +748,19 @@ export default function App() {
           ? { ...c, id: 'sound-1', type: 'sound_sensor', name: 'Sound Level Sensor', value: 45 }
           : c
       );
+    } else if (taskId === 11) {
+      newComponents = newComponents.map(c => {
+        if (c.port === 'P0' && c.type === 'humidity_sensor') {
+          return { ...c, id: 'hum-1', type: 'humidity_sensor', name: 'Humidity Sensor', value: 75 };
+        }
+        if (c.port === 'P1' && c.type === 'light_sensor') {
+          return { ...c, id: 'temp-1', type: 'temp_sensor', name: 'Temperature Sensor', value: 35 };
+        }
+        if (c.port === 'P7' && c.type === 'servo') {
+          return { ...c, value: 0 };
+        }
+        return c;
+      });
     }
     
     setComponents(newComponents);
@@ -1265,29 +1338,69 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Back and Next tasks selection - grouped styled buttons matching save/load style */}
-                  <div className="flex gap-2 shrink-0 justify-between items-center bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm mt-auto">
-                    <button
-                      disabled={currentTaskIndex === 0}
-                      onClick={() => {
-                        setCurrentTaskIndex(prev => prev - 1);
-                        setTaskFeedback({ type: null, message: '' });
-                      }}
-                      className="p-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 rounded-xl transition-all cursor-pointer border-2 border-slate-200 disabled:cursor-not-allowed"
-                    >
-                      <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-                    </button>
-                    <span className="text-xs font-black text-slate-700">בחר משימה</span>
-                    <button
-                      disabled={currentTaskIndex === LEARNING_TASKS.length - 1}
-                      onClick={() => {
-                        setCurrentTaskIndex(prev => prev + 1);
-                        setTaskFeedback({ type: null, message: '' });
-                      }}
-                      className="p-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-800 rounded-xl transition-all cursor-pointer border-2 border-slate-200 disabled:cursor-not-allowed"
-                    >
-                      <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
-                    </button>
+                  {/* Back and Next tasks selection with direct number buttons */}
+                  <div className="flex flex-col gap-3 shrink-0 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm mt-auto">
+                    <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                      <span className="text-xs font-black text-slate-700 flex items-center gap-1">
+                        <Trophy className="w-4 h-4 text-amber-500" />
+                        מעבר מהיר בין משימות:
+                      </span>
+                      <div className="flex gap-1.5">
+                        <button
+                          disabled={currentTaskIndex === 0}
+                          onClick={() => {
+                            setCurrentTaskIndex(prev => prev - 1);
+                            setTaskFeedback({ type: null, message: '' });
+                          }}
+                          className="p-1.5 bg-slate-50 hover:bg-slate-150 disabled:opacity-40 text-slate-800 rounded-lg transition-all cursor-pointer border-2 border-slate-200 disabled:cursor-not-allowed"
+                          title="משימה קודמת"
+                        >
+                          <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+                        <button
+                          disabled={currentTaskIndex === LEARNING_TASKS.length - 1}
+                          onClick={() => {
+                            setCurrentTaskIndex(prev => prev + 1);
+                            setTaskFeedback({ type: null, message: '' });
+                          }}
+                          className="p-1.5 bg-slate-50 hover:bg-slate-150 disabled:opacity-40 text-slate-800 rounded-lg transition-all cursor-pointer border-2 border-slate-200 disabled:cursor-not-allowed"
+                          title="משימה הבאה"
+                        >
+                          <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {LEARNING_TASKS.map((task, idx) => {
+                        const isSelected = currentTaskIndex === idx;
+                        const isCompleted = completedTasks.includes(task.id);
+                        return (
+                          <motion.button
+                            key={task.id}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                              setCurrentTaskIndex(idx);
+                              setTaskFeedback({ type: null, message: '' });
+                            }}
+                            className={`h-9 w-9 text-xs font-black rounded-xl flex items-center justify-center border-2 transition-all cursor-pointer relative
+                              ${isSelected 
+                                ? 'bg-amber-400 border-amber-500 text-slate-900 shadow-[0_2.5px_0_#d97706]' 
+                                : isCompleted
+                                  ? 'bg-emerald-500 border-emerald-600 text-white shadow-[0_2.5px_0_#10b981]'
+                                  : 'bg-slate-50 border-slate-250 text-slate-700 hover:bg-slate-100 shadow-[0_2.5px_0_#cbd5e1]'
+                              }
+                            `}
+                          >
+                            <span>{task.id}</span>
+                            {isCompleted && !isSelected && (
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2 rounded-full bg-emerald-400 border border-white animate-pulse" />
+                            )}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </motion.div>
