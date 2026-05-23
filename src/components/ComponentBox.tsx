@@ -482,9 +482,10 @@ export default function ComponentBox({ instance, onValueChange, onHover, onSwapC
                    ) : (
                      /* Servo Arm (White Horn) */
                      <div className="relative w-full h-full flex items-center justify-center">
-                        <div className="w-18 h-4 bg-white rounded-full border border-slate-300 shadow-md flex items-center justify-between px-2">
+                        <div className="w-18 h-4 bg-white rounded-full border border-slate-300 shadow-md relative flex items-center justify-between px-2">
                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-300" />
-                           <div className="w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-300" />
+                           {/* Blinking Red Dot showing pointing direction */}
+                           <div className="w-2.5 h-2.5 rounded-full bg-red-500 border border-red-600 shadow-[0_0_8px_#ef4444] animate-pulse" title="חץ כיוון (נקודה אדומה)" />
                         </div>
                         <div className="w-6 h-6 bg-white rounded-full border-2 border-slate-400 shadow-md absolute z-20 flex items-center justify-center">
                            <div className="w-1.5 h-1.5 bg-slate-600 rounded-full" />
