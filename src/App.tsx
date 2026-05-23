@@ -1,4 +1,4 @@
- import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
+import { useState, useCallback, useRef, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Square, RefreshCcw, Info, Maximize2, Minimize2, Save, FolderOpen, X, Code, Trophy, Sparkles, Lightbulb, CheckCircle2, ChevronRight, ChevronLeft, Award } from 'lucide-react';
 import { INITIAL_COMPONENTS } from './constants';
